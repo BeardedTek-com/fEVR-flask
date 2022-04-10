@@ -1,0 +1,74 @@
+<html lang="en">
+    <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1"/>
+        <meta http-equiv="ScreenOrientation" content="autoRotate:disabled">
+        <meta name="description" content="frigate Event Video Recorder Uses frigate object detection as a backend for an Event driven network Video Recorder."/>
+        <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+	    <meta name="mobile-web-app-capable" content="yes"/>
+        <meta name="theme-color" content="#3B4248"/>
+        <link rel="apple-touch-icon" href="fEVR-192.png"/>
+        <link rel="icon" type="image/png" href="favicon.png">
+        <link rel="stylesheet" href="css/main.css"/>
+        <link rel="stylesheet" type="text/css" href="css/landscape.css" media="screen and (orientation: landscape)">
+        <link rel="stylesheet" type="text/css" href="css/portrait.css" media="screen and (orientation: portrait)">
+        <link rel="stylesheet" href="css/colors.css"/>
+        <title>fEVR Docs</title>
+        <!-- Global site tag (gtag.js) - Google Analytics -->
+        <script async src="https://www.googletagmanager.com/gtag/js?id=G-N9EPFZW1J5"></script>
+        <script>
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', 'G-N9EPFZW1J5');
+        </script>
+        <script src='js/modal.js'></script>
+        <script src='js/main.js'></script>
+    </head>
+    <body class="bg-dark">
+        <div class="navbar bg-dark">
+            <div class="logo">
+                <a href="index.py"><img src="img/fevr.svg"></a>
+            </div>
+            <div class="links">
+                #DOCLIST#
+            </div>
+        </div>
+        <div class="share">
+            <span class="socialIcons hidden">
+                <a target="_blank" href="https://www.facebook.com/sharer/sharer.php?u=http%3A%2F%2Ffevr.video">
+                    <img class="btn" src='img/share-fb.svg'>
+                </a>
+                <a target="_blank" href="https://twitter.com/intent/tweet?url=http%3A%2F%2Ffevr.video&text=AI%20Object%20Detection%20with%20fEVR%20-%20frigate%20Event%20Video%20Recorder">
+                    <img class="btn" src='img/share-twitter.svg'>
+                </a>
+                <a target="_blank" href="http://pinterest.com/pin/create/button/?url=http%3A%2F%2Ffevr.video&media=&description=AI%20Object%20Detection%20with%20fEVR%20-%20frigate%20Event%20Video%20Recorder">
+                    <img class="btn" src='img/share-pin.svg'>
+                </a>
+                <a target="_blank" href="https://reddit.com/submit?url=https://fevr.video&title=AI%20Object%20Detection%20with%20fEVR%20-%20frigate%20Event%20Video%20Recorder">
+                    <img class="btn" src='img/share-reddit.svg'>
+                </a>
+                <a target="_blank" href="http://www.linkedin.com/shareArticle?mini=true&url=http%3A%2F%2Ffevr.video&title=AI%20Object%20Detection%20with%20fEVR%20-%20frigate%20Event%20Video%20Recorder">
+                    <img class="btn" src='img/share-linkedin.svg'>
+                </a>
+                <img id="closeBtn" class="invisible" onclick="shareButton('.socialIcons','shareBtn','.share')" src='img/close.svg'>
+            </span>
+                <img id="shareBtn" class="visible" onclick="shareButton('.socialIcons','shareBtn','.share')" src='img/share.svg'>
+        </div>
+        <div class="footer">
+        <div class="content">
+            <div class="description">
+                <div class="tagline">
+                    #TITLE#
+                </div>
+                <div class="doc">
+                    #MARKDOWN#
+                    <div class="beard"></div>
+                </div>
+                <div class="footerContents">
+                    <span class='copyleft'>&copy;</span>2022 <a target='_blank' href='https://beardedtek.com'>The Bearded Tek</a><br/>
+                </div>
+            </div>
+            
+        </div>
+    </body>
+</html>
