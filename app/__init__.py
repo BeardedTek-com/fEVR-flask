@@ -46,9 +46,20 @@ class events(db.Model):
 
 @app.route('/')
 def home():
-    return 'Welcome.'
+    title = "fEVR API Documentation"
+    contents =  [
+                "/events/all: returns json with all events in database",
+                "/events/<eventid>: returns json with specific event by frigate's event id",
+                "/events/camera/<camera>: returns json with specific event by camera name",
+                "/events/add/<eventid>/<camera>/<score>: adds event with provided details",
+                "",
+                "/cameras/add/<camera>/<server>: adds camera using rtsp-simple-server server address",
+                "/cameras/<camera>: returns json with specific camera information"
+                ]
 
-@app.route('/event/add/<eventid>/<camera>/<score>')
+    return render_template('home.html',title=title, contents=contents)
+
+@app.route('/events/add/<eventid>/<camera>/<score>')
 def addEvent(eventid,camera,score):
     db.create_all()
     event = events(eventid=eventid,camera=camera,score=int(score),ack='')
