@@ -11,6 +11,7 @@
         <link rel="stylesheet" href="/static/css/main.css"/>
         <link rel="stylesheet" type="text/css" href="/static/css/landscape.css" media="screen and (orientation: landscape)">
         <link rel="stylesheet" type="text/css" href="/static/css/portrait.css" media="screen and (orientation: portrait)">
+        <link rel="stylesheet" href="/static/css/events.css"/>
         <link rel="stylesheet" href="/static/css/colors.css"/>
         <title>{{ title }}</title>
         <!-- Global site tag (gtag.js) - Google Analytics -->
@@ -62,9 +63,35 @@
                     {{ title }}
                 </div>
                 <div class="doc">
-                    {% for content in contents %}
-                    {{ content }}<br/>
-                    {% endfor %}
+                    {% if page == 'apidocs' %}
+                        {% for content in contents %}
+			    {% if loop.index > 2 %}
+			    {% set content = content.split(' ') %}
+                            {{ content|safe }}<br/>
+			    {% endif %}
+                        {% endfor %}
+                    {% endif %}
+
+                    {% if page == 'events' or 'event' %}
+                    <div id="container" class="eventsContainer text-light-accent">
+                        {% for event in events %}
+                            <div class='events text-light-accent'>
+                                <div class="eventThumb">
+                                    <a href='/event/{{ events[event]["eventid"] }}'>
+                                        <img class='thumb' src='/static/events/{{ events[event]["eventid"]}}/thumb.jpg'>
+                                    </a>
+                                    <div class='eventsDetails'>
+                                            <div class='subdetail'>{{ events[event]["eventid"] }}</div>
+                                            <div class='subdetail'>{{ events[event]["object"] }}</div>
+                                            <div class='subdetail'>{{ events[event]["score"] }}</div>
+                                    </div>
+                                    <div class="{% if events[event]['ack'] == 'true' %}hidden{% else %}new{% endif %}">NEW</div>
+                                    
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
                     <div class="beard"></div>
                 </div>
                 <div class="footerContents">

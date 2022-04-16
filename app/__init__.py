@@ -1,6 +1,7 @@
 from flask import Flask, render_template
 from flask_sqlalchemy import SQLAlchemy
 import json
+import subprocess
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:////tmp/fEVR.sqlite'
 app.config['debug'] = True
@@ -29,6 +30,7 @@ class events(db.Model):
     id = db.Column(db.Integer,primary_key = True)
     eventid = db.Column(db.String(25), unique = True)
     camera = db.Column(db.String(50))
+    object = db.Column(db.String(25))
     score = db.Column(db.Integer)
     ack = db.Column(db.String(10))
     def __repr__(self):
@@ -37,29 +39,55 @@ class events(db.Model):
     def eventToDict(query):
         result = {}
         for event in query:
-            result[str(event.eventid)] = {
+            result[str(event.id)] = {
+                "eventid"   : event.eventid,
                 "camera"    : event.camera,
+                "object"    : event.object,
                 "score"     : event.score,
                 "ack"       : event.ack
             }
         return result
 
+# Main Routes
 @app.route('/')
 def home():
+    page = 'events'
+    title = 'Events'
+    events = allEvents()
+    print(events)
+    return render_template('home.html',page=page,title=title,events=events)
+
+@app.route('/event/<eventid>')
+def showEvent(eventid):
+    events = byEventId(eventid)
+    page= 'event'
+    print(events)
+    for i in events:
+        event = events[i]
+    title = f"{event['camera']} - {event['object']}"
+    return render_template('home.html',page=page,title=title,events=events)
+
+# API Routes
+@app.route('/api')
+def apihome():
+    page = 'apidocs'
     title = "fEVR API Documentation"
-    contents =  [
-                "/events/all: returns json with all events in database",
-                "/events/<eventid>: returns json with specific event by frigate's event id",
-                "/events/camera/<camera>: returns json with specific event by camera name",
-                "/events/add/<eventid>/<camera>/<score>: adds event with provided details",
-                "",
-                "/cameras/add/<camera>/<server>: adds camera using rtsp-simple-server server address",
-                "/cameras/<camera>: returns json with specific camera information"
-                ]
+    import subprocess
+    contents = subprocess.Popen("flask routes", shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()[0].decode("utf-8").replace(' ','&nbsp;').split("\n")
+    #contents = subprocess.Popen("flask routes", shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()[0].split()
+    #contents = subprocess.check_output(['flask', 'routes'])
+    #contents =  [
+    #            "/api/events/all: returns json with all events in database",
+    #            "/api/events/<eventid>: returns json with specific event by frigate's event id",
+    #            "/api/events/camera/<camera>: returns json with specific event by camera name",
+    #            "/api/events/add/<eventid>/<camera>/<score>: adds event with provided details",
+    #            "",
+    #            "/api/cameras/add/<camera>/<server>: adds camera using rtsp-simple-server server address",
+    #            "/api/cameras/<camera>: returns json with specific camera information"
+    #            ]
+    return render_template('home.html',page=page,title=title, contents=contents)
 
-    return render_template('home.html',title=title, contents=contents)
-
-@app.route('/events/add/<eventid>/<camera>/<score>')
+@app.route('/api/events/add/<eventid>/<camera>/<score>')
 def addEvent(eventid,camera,score):
     db.create_all()
     event = events(eventid=eventid,camera=camera,score=int(score),ack='')
@@ -67,22 +95,22 @@ def addEvent(eventid,camera,score):
     db.session.commit()
     return "OK"
 
-@app.route('/events/all')
+@app.route('/api/events/all')
 def allEvents():
     query = events.query.all()
     return events.eventToDict(query)
 
-@app.route('/event/<eventid>')
+@app.route('/api/event/<eventid>')
 def byEventId(eventid):
     query = events.query.filter_by(eventid=eventid)
     return events.eventToDict(query)
 
-@app.route('/events/camera/<camera>')
+@app.route('/api/events/camera/<camera>')
 def byCamera(camera):
     query = events.query.filter_by(camera=camera)
     return events.eventToDict(query)
 
-@app.route('/cameras/add/<camera>/<server>')
+@app.route('/api/cameras/add/<camera>/<server>')
 def addCamera(camera,server):
     db.create_all()
     hls = f"http://{server}:5084/{camera}"
@@ -92,7 +120,7 @@ def addCamera(camera,server):
     db.session.commit()
     return "OK"
 
-@app.route('/cameras/<camera>')
+@app.route('/api/cameras/<camera>')
 def getCamera(camera):
     if camera == "all":
         query = cameras.query.all()
