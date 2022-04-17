@@ -1,3 +1,4 @@
 *.pyc
 venv
 app/static/events/*
+app/*.sqlite
