@@ -39,12 +39,6 @@ a:hover{
 .event{
     padding: 20px;
 }
-.eventControls{
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: space-between;
-    margin-top: 1em;
-}
 .events{
     padding: 0 0 1.5em 0;
 }
@@ -81,6 +75,10 @@ a:hover{
     width: 90%;
     max-width: 720px;
     margin: auto;
+}
+.snap{
+    width: 90%;
+    max-width: 720px;
 }
 .live{
     width: 640px;
@@ -161,6 +159,9 @@ a:hover{
     border: 0 solid darkblue;
     height: 2em;
 }
+.logo{
+    height: 2em;
+}
 .title{
     font-size: 1.25em;
     font-weight: bold;
@@ -184,10 +185,7 @@ button{
     font-size: 1.25em;
     font-weight: bold;
     padding: 0.1em;
-    padding-top: 0.5em;
-    padding-bottom: 0.5em;
-    margin: 1%;
-    width: 48%;
+    margin: 0.1em;
 }
 button.buttonAction{
     background: rgb(160,168,170);
@@ -233,21 +231,6 @@ button.enabled:hover{
 .eventThumb img{
     height: 180px;
     width: 320px;
-}
-.eventView{
-    position: relative;
-    display: flex;
-    margin-top: 1em;
-}
-.eventView img{
-    width: 100%;
-}
-.eventView video{
-    width: 100%;
-}
-.eventView .new{
-    font-size: 2em;
-    padding: 0.125em;
 }
 .new{
     position: absolute;

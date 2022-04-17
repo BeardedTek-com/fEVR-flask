@@ -3,11 +3,17 @@
         font-size: 1em;
         
     }
+    .tagline{
+        padding-bottom: 1em;
+    }
 }
 @media screen and (max-height: 575px) {
     .content{
         font-size: 0.95em;
         
+    }
+    .tagline{
+        padding-bottom: 0.25em;
     }
 }
 @media screen and (max-height: 525px) {
@@ -15,11 +21,17 @@
         font-size: 0.9em;
         
     }
+    .tagline{
+        padding-bottom: 0.25em;
+    }
 }
 @media screen and (max-height: 475px) {
     .content{
         font-size: 0.8em;
         
+    }
+    .tagline{
+        padding-bottom: 0.25em;
     }
 }
 @media screen and (max-height: 425px) {
@@ -27,11 +39,17 @@
         font-size: 0.75em;
         
     }
+    .tagline{
+        padding-bottom: 0.25em;
+    }
 }
 @media screen and (max-height: 400px) {
     .content{
         font-size: 0.725em;
         
+    }
+    .tagline{
+        padding-bottom: 0.25em;
     }
 }
 @media screen and (max-height: 380px) {
@@ -39,16 +57,25 @@
         font-size: 0.675em;
         
     }
+    .tagline{
+        padding-bottom: 0.25em;
+    }
 }
 @media screen and (max-height: 360px) {
     .content{
         font-size: 0.625em;
         
     }
+    .tagline{
+        padding-bottom: 0.25em;
+    }
 }
 @media screen and (max-height: 330px) {
     .content{
         font-size: 0.6em;
         
+    }
+    .tagline{
+        padding-bottom: 0.25em;
     }
 }

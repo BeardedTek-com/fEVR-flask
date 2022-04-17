@@ -28,74 +28,70 @@
     <body class="bg-dark">
         <div class="navbar bg-dark">
             <div class="logo">
-                <a href="/"><img src="/static/img/fevr.svg"></a>
+                <a href="index.py"><img src="/static/img/fevr.svg"></a>
             </div>
             <div class="links">
-                <button onclick="window.location.href='/'"">All Events</button>
-                <button onclick="window.location.href='/api'"">API Docs</button>
-                <button onclick="window.open('https://github.com/beardedtek-com/fevr','_blank')">GitHub</button>
-                <button onclick="window.open('https://fevr.video','_blank')">fevr.video</button>
+                <button onclick="window.location.href='https://fevr.video'"">fevr.video</button>
+                <button onclick="window.location.href='https://docs.fevr.video'"">docs</button>
             </div>
         </div>
+        <div class="share">
+            <span class="socialIcons hidden">
+                <a target="_blank" href="https://www.facebook.com/sharer/sharer.php?u=http%3A%2F%2Ffevr.video">
+                    <img class="btn" src='/static/img/share-fb.svg'>
+                </a>
+                <a target="_blank" href="https://twitter.com/intent/tweet?url=http%3A%2F%2Ffevr.video&text=AI%20Object%20Detection%20with%20fEVR%20-%20frigate%20Event%20Video%20Recorder">
+                    <img class="btn" src='/static/img/share-twitter.svg'>
+                </a>
+                <a target="_blank" href="http://pinterest.com/pin/create/button/?url=http%3A%2F%2Ffevr.video&media=&description=AI%20Object%20Detection%20with%20fEVR%20-%20frigate%20Event%20Video%20Recorder">
+                    <img class="btn" src='/static/img/share-pin.svg'>
+                </a>
+                <a target="_blank" href="https://reddit.com/submit?url=https://fevr.video&title=AI%20Object%20Detection%20with%20fEVR%20-%20frigate%20Event%20Video%20Recorder">
+                    <img class="btn" src='/static/img/share-reddit.svg'>
+                </a>
+                <a target="_blank" href="http://www.linkedin.com/shareArticle?mini=true&url=http%3A%2F%2Ffevr.video&title=AI%20Object%20Detection%20with%20fEVR%20-%20frigate%20Event%20Video%20Recorder">
+                    <img class="btn" src='/static/img/share-linkedin.svg'>
+                </a>
+                <img id="closeBtn" class="invisible" onclick="shareButton('.socialIcons','shareBtn','.share')" src='/static/img/close.svg'>
+            </span>
+                <img id="shareBtn" class="visible" onclick="shareButton('.socialIcons','shareBtn','.share')" src='/static/img/share.svg'>
+        </div>
+        <div class="footer">
         <div class="content">
             <div class="description">
                 <div class="tagline">
-                    {{ title|safe }}
+                    {{ title }}
                 </div>
                 <div class="doc">
-{% if page == 'apidocs' %}
-    <pre>{{ contents }}</pre>
-{% elif page == 'event' %}
+                    {% if page == 'apidocs' %}
+                        {% for content in contents %}
+			    {% if loop.index > 2 %}
+			    {% set content = content.split(' ') %}
+                            {{ content|safe }}<br/>
+			    {% endif %}
+                        {% endfor %}
+                    {% endif %}
 
-<div id="container" class="eventsContainer">
-    <div class='events'>
-        <div class="eventView">
-            {% if view == 'snap' %}
-            <img class='viewport' src='/static/events/{{ event["eventid"]}}/snapshot.jpg'>
-            {% elif view == 'clip' %}
-            <video class="viewport" controls>
-                <source src="/static/events/{{event['eventid']}}/clip.mp4" type="video/mp4">
-            </video>
-            {% elif view == 'live' %}
-            <img src="http://192.168.2.240:5000/api/{{event['camera']}}?h=720&amp;bbox=1&amp;motion=1">
-            {% endif %}
-            <div class="{% if event['ack'] == 'true' %}hidden{% else %}new{% endif %}">NEW</div>
-        </div>
-        <div class="eventControls">
-            <button onclick="window.location.href='/event/{{event['eventid']}}/clip'" class="eventControl">View Video</button>
-            <button onclick="window.location.href='/event/{{event['eventid']}}/live'" class="eventControl">Live Video</button>
-            <button onclick="window.location.href='/event/{{event['eventid']}}/ack'" class="eventControl">Mark Unseen</button>
-            <button onclick="window.location.href='/event/{{event['eventid']}}/delete'" class="eventControl danger">Delete Event</button>
-        </div>
-    </div>
-</div>
-
-{% elif page == 'events' %}
-<div id="container" class="eventsContainer">
-    {% if events|length > 0 %}
-        {% for event in events %}
-            <div class='events'>
-            <div class="eventThumb">
-            <a href='/event/{{ events[event]["eventid"] }}/snap'>
-            <img class='thumb' src='/static/events/{{ events[event]["eventid"]}}/thumb.jpg'>
-            </a>
-            <div class='eventsDetails'>
-            <div class='subdetail'>{{ events[event]["time"] }}</div>
-            <div class='subdetail'>{{ events[event]["object"] }}</div>
-            <div class='subdetail'>{{ events[event]["score"] }}%</div>
-            </div>
-            <div class="{% if events[event]['ack'] == 'true' %}hidden{% else %}new{% endif %}">NEW</div>
-            </div>
-            </div>
-        {% endfor %}
-    {% else %}
-        <div class="events">
-            Sorry, Nothing to see here yet.<br/>
-            SHOW SETUP DIALOGUE?
-        </div>
-    {% endif %}
-</div>
-{% endif %}
+                    {% if page == 'events' or 'event' %}
+                    <div id="container" class="eventsContainer text-light-accent">
+                        {% for event in events %}
+                            <div class='events text-light-accent'>
+                                <div class="eventThumb">
+                                    <a href='/event/{{ events[event]["eventid"] }}'>
+                                        <img class='thumb' src='/static/events/{{ events[event]["eventid"]}}/thumb.jpg'>
+                                    </a>
+                                    <div class='eventsDetails'>
+                                            <div class='subdetail'>{{ events[event]["eventid"] }}</div>
+                                            <div class='subdetail'>{{ events[event]["object"] }}</div>
+                                            <div class='subdetail'>{{ events[event]["score"] }}</div>
+                                    </div>
+                                    <div class="{% if events[event]['ack'] == 'true' %}hidden{% else %}new{% endif %}">NEW</div>
+                                    
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
                     <div class="beard"></div>
                 </div>
                 <div class="footerContents">
@@ -103,5 +99,6 @@
                 </div>
             </div>
             
+        </div>
     </body>
 </html>

@@ -1,63 +1,21 @@
 from flask import Flask, render_template
-from flask_sqlalchemy import SQLAlchemy, inspect
+from flask_sqlalchemy import SQLAlchemy
 import json
 import subprocess
-from datetime import datetime
-import os
-from PIL import Image
-import requests
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///fEVR.sqlite'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:////tmp/fEVR.sqlite'
 app.config['debug'] = True
 app.config['host'] = "0.0.0.0"
 app.debug = True
 db = SQLAlchemy(app)
-
-class Fetch:
-    def __init__(self,path,eventid,frigate,thumbsize=180):
-        self.path = path
-        self.event = eventid
-        self.frigate = frigate
-        self.thumbSize = thumbsize
-        self.thumbPATH = f"{self.path}thumb.jpg"
-        self.clipPATH = f"{self.path}clip.mp4"
-        self.snapPATH = f"{self.path}snapshot.jpg"
-        self.snap = f"{self.frigate}api/events/{eventid}/snapshot.jpg"
-        self.clip = f"{self.frigate}api/events/{eventid}/clip.mp4"
-        print(self.frigate)
-        print(self.event)
-        print(self.thumbPATH)
-        print(self.snapPATH)
-        print(self.clipPATH)
-        print(self.snap)
-        print(self.clip)
-        self.getEvent()
-    def getEvent(self):
-        if not os.path.exists(self.thumbPATH):
-            if not os.path.exists(self.path):
-                os.makedirs(self.path)
-            open(self.snapPATH,'wb').write(requests.get(self.snap, allow_redirects=True).content)
-            self.resizeImg(self.snapPATH,self.thumbSize)
-            open(self.clipPATH,'wb').write(requests.get(self.clip, allow_redirects=True).content)
-            return f"Got {self.event} from frigate at {self.frigate}"
-
-    def resizeImg(self,img,height=180,ratio=1.777777778):
-        if os.path.exists(img):
-            # Resizes an image from the filesystem
-            Image.open(img).resize((int(height*ratio),height), Image.ANTIALIAS).save(self.thumbPATH,"JPEG", quality=75,optimize=True)
 
 class cameras(db.Model):
     id = db.Column(db.Integer,primary_key = True)
     camera = db.Column(db.String(20), unique = True)
     hls = db.Column(db.String(200))
     rtsp = db.Column(db.String(200))
-
     def __repr__(self):
         return str({"id":self.id,"camera":self.camera,"src":self.src})
-
-    def exists():
-        inspector = inspect(db.engine)
-        return inspector.has_table("events")
 
     def cameraToDict(query):
         result = {}
@@ -71,25 +29,18 @@ class cameras(db.Model):
 class events(db.Model):
     id = db.Column(db.Integer,primary_key = True)
     eventid = db.Column(db.String(25), unique = True)
-    time = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
     camera = db.Column(db.String(50))
     object = db.Column(db.String(25))
     score = db.Column(db.Integer)
     ack = db.Column(db.String(10))
-
     def __repr__(self):
-        return str({"id": self.id,"eventid":self.eventid,"time":self.time,"camera":self.camera,"object":self.object,"score":self.score,"ack":self.ack})
-
-    def exists():
-        inspector = inspect(db.engine)
-        return inspector.has_table("events")
+        return str({"id": self.id,"eventid":self.eventid,"camera":self.camera,"score":self.score,"ack":self.ack})
 
     def eventToDict(query):
         result = {}
         for event in query:
-            result[event.id] = {
+            result[str(event.id)] = {
                 "eventid"   : event.eventid,
-                "time"      : event.time,
                 "camera"    : event.camera,
                 "object"    : event.object,
                 "score"     : event.score,
@@ -101,21 +52,20 @@ class events(db.Model):
 @app.route('/')
 def home():
     page = 'events'
-    title = 'frigate Event Video Recorder'
+    title = 'Events'
     events = allEvents()
+    print(events)
     return render_template('home.html',page=page,title=title,events=events)
 
-@app.route('/event/<eventid>/<view>')
-def showEvent(eventid,view):
-    query = events.query.filter_by(eventid=eventid)
-    query = events.eventToDict(query)
+@app.route('/event/<eventid>')
+def showEvent(eventid):
+    events = byEventId(eventid)
     page= 'event'
-    print(f"QUERY: {query}")
-    for item in query:
-        event = query[item]
-        print(f"EVENT: {event}")
-    title = f"<div class='back'><a href='/'><img src='/static/img/back.svg'></a></div><div>{event['time']}</div><div>{event['object'].title()} in {event['camera'].title()}</div>"
-    return render_template('home.html',page=page,title=title,event=event,view=view)
+    print(events)
+    for i in events:
+        event = events[i]
+    title = f"{event['camera']} - {event['object']}"
+    return render_template('home.html',page=page,title=title,events=events)
 
 # API Routes
 @app.route('/api')
@@ -123,29 +73,34 @@ def apihome():
     page = 'apidocs'
     title = "fEVR API Documentation"
     import subprocess
-    contents = subprocess.Popen("flask routes", shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()[0].decode("utf-8")
+    contents = subprocess.Popen("flask routes", shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()[0].decode("utf-8").replace(' ','&nbsp;').split("\n")
+    #contents = subprocess.Popen("flask routes", shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()[0].split()
+    #contents = subprocess.check_output(['flask', 'routes'])
+    #contents =  [
+    #            "/api/events/all: returns json with all events in database",
+    #            "/api/events/<eventid>: returns json with specific event by frigate's event id",
+    #            "/api/events/camera/<camera>: returns json with specific event by camera name",
+    #            "/api/events/add/<eventid>/<camera>/<score>: adds event with provided details",
+    #            "",
+    #            "/api/cameras/add/<camera>/<server>: adds camera using rtsp-simple-server server address",
+    #            "/api/cameras/<camera>: returns json with specific camera information"
+    #            ]
     return render_template('home.html',page=page,title=title, contents=contents)
 
-@app.route('/api/events/add/<eventid>/<camera>/<object>/<score>')
-def addEvent(eventid,camera,score,object):
+@app.route('/api/events/add/<eventid>/<camera>/<score>')
+def addEvent(eventid,camera,score):
     db.create_all()
-    time = datetime.fromtimestamp(int(eventid.split('.')[0]))
-    event = events(eventid=eventid,camera=camera,object=object,score=int(score),ack='',time=time)
+    event = events(eventid=eventid,camera=camera,score=int(score),ack='')
     db.session.add(event)
     db.session.commit()
-    fetchPath = f"{os.getcwd()}/app/static/events/{eventid}/"
-    print(fetchPath)
-    fetchEvent = Fetch(fetchPath,eventid,'http://192.168.2.240:5000/')
     return "OK"
 
 @app.route('/api/events/all')
 def allEvents():
-    if not events.exists():
-        db.create_all()
     query = events.query.all()
     return events.eventToDict(query)
 
-@app.route('/api/event/<eventid>/<view>')
+@app.route('/api/event/<eventid>')
 def byEventId(eventid):
     query = events.query.filter_by(eventid=eventid)
     return events.eventToDict(query)
@@ -167,8 +122,6 @@ def addCamera(camera,server):
 
 @app.route('/api/cameras/<camera>')
 def getCamera(camera):
-    if not cameras.exists():
-        db.create_all()
     if camera == "all":
         query = cameras.query.all()
     else:
