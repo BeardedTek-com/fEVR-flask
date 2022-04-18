@@ -13,7 +13,7 @@
         <link rel="stylesheet" type="text/css" href="/static/css/portrait.css" media="screen and (orientation: portrait)">
         <link rel="stylesheet" href="/static/css/events.css"/>
         <link rel="stylesheet" href="/static/css/colors.css"/>
-        <title>{{ title }}</title>
+        <title>fEVR by BeardedTek</title>
         <!-- Global site tag (gtag.js) - Google Analytics -->
         <script async src="https://www.googletagmanager.com/gtag/js?id=G-N9EPFZW1J5"></script>
         <script>
@@ -50,7 +50,7 @@
 <div id="container" class="eventsContainer">
     <div class='events'>
         <div class="eventView">
-            {% if view == 'snap' %}
+            {% if view == 'snap' or 'ack' %}
             <img class='viewport' src='/static/events/{{ event["eventid"]}}/snapshot.jpg'>
             {% elif view == 'clip' %}
             <video class="viewport" controls>
@@ -64,7 +64,11 @@
         <div class="eventControls">
             <button onclick="window.location.href='/event/{{event['eventid']}}/clip'" class="eventControl">View Video</button>
             <button onclick="window.location.href='/event/{{event['eventid']}}/live'" class="eventControl">Live Video</button>
-            <button onclick="window.location.href='/event/{{event['eventid']}}/ack'" class="eventControl">Mark Unseen</button>
+            {% if event['ack'] == "true" %}
+            <button onclick="window.location.href='/event/{{event['eventid']}}/unack'" class="eventControl">Mark Unseen</button>
+            {% else %}
+            <button onclick="window.location.href='/event/{{event['eventid']}}/ack'" class="eventControl">Mark Seen</button>
+            {% endif %}
             <button onclick="window.location.href='/event/{{event['eventid']}}/delete'" class="eventControl danger">Delete Event</button>
         </div>
     </div>

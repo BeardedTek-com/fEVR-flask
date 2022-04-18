@@ -82,7 +82,8 @@ class events(db.Model):
 
     def exists():
         inspector = inspect(db.engine)
-        return inspector.has_table("events")
+        if inspector:
+            return inspector.has_table("events")
 
     def eventToDict(query):
         result = {}
@@ -99,14 +100,23 @@ class events(db.Model):
 
 # Main Routes
 @app.route('/')
-def home():
+def viewAll():
     page = 'events'
     title = 'frigate Event Video Recorder'
-    events = allEvents()
+    events = apiShowAllEvents()
     return render_template('home.html',page=page,title=title,events=events)
 
 @app.route('/event/<eventid>/<view>')
-def showEvent(eventid,view):
+def viewSingle(eventid,view):
+    if view == 'ack':
+        apiAckEvent(eventid)
+    elif view == 'unack':
+        apiUnackEvent(eventid)
+    elif view == 'del':
+        query = events.query.filter_by(eventid=eventid).first()
+    elif view == 'delOK':
+        apiDelEvent(eventid)
+        apiHome()
     query = events.query.filter_by(eventid=eventid)
     query = events.eventToDict(query)
     page= 'event'
@@ -114,12 +124,12 @@ def showEvent(eventid,view):
     for item in query:
         event = query[item]
         print(f"EVENT: {event}")
-    title = f"<div class='back'><a href='/'><img src='/static/img/back.svg'></a></div><div>{event['time']}</div><div>{event['object'].title()} in {event['camera'].title()}</div>"
+    title = f"<div class='back'><a href='/'><img src='/static/img/back.svg'></a></div><div>{event['object'].title()} in {event['camera'].title()}</div><div>{view.title()}</div>"
     return render_template('home.html',page=page,title=title,event=event,view=view)
 
 # API Routes
 @app.route('/api')
-def apihome():
+def apiHome():
     page = 'apidocs'
     title = "fEVR API Documentation"
     import subprocess
@@ -127,7 +137,7 @@ def apihome():
     return render_template('home.html',page=page,title=title, contents=contents)
 
 @app.route('/api/events/add/<eventid>/<camera>/<object>/<score>')
-def addEvent(eventid,camera,score,object):
+def apiAddEvent(eventid,camera,score,object):
     db.create_all()
     time = datetime.fromtimestamp(int(eventid.split('.')[0]))
     event = events(eventid=eventid,camera=camera,object=object,score=int(score),ack='',time=time)
@@ -138,25 +148,44 @@ def addEvent(eventid,camera,score,object):
     fetchEvent = Fetch(fetchPath,eventid,'http://192.168.2.240:5000/')
     return "OK"
 
+@app.route('/api/events/ack/<eventid>')
+def apiAckEvent(eventid):
+    query = events.query.filter_by(eventid=eventid).first()
+    query.ack = "true"
+    db.session.commit()
+
+@app.route('/api/events/unack/<eventid>')
+def apiUnackEvent(eventid):
+    query = events.query.filter_by(eventid=eventid).first()
+    query.ack = ""
+    db.session.commit()
+
+@app.route('/api/events/del/<eventid>')
+def apiDelEvent(eventid):
+    query = events.query.filter_by(eventid=eventid)
+    db.session.delete(query)
+    db.session.commit()
+
+
 @app.route('/api/events/all')
-def allEvents():
+def apiShowAllEvents():
     if not events.exists():
         db.create_all()
     query = events.query.all()
     return events.eventToDict(query)
 
 @app.route('/api/event/<eventid>/<view>')
-def byEventId(eventid):
+def apiSingleEvent(eventid):
     query = events.query.filter_by(eventid=eventid)
     return events.eventToDict(query)
 
 @app.route('/api/events/camera/<camera>')
-def byCamera(camera):
+def apiEventsByCamera(camera):
     query = events.query.filter_by(camera=camera)
     return events.eventToDict(query)
 
 @app.route('/api/cameras/add/<camera>/<server>')
-def addCamera(camera,server):
+def apiAddCamera(camera,server):
     db.create_all()
     hls = f"http://{server}:5084/{camera}"
     rtsp = f"rtsp://{server}:5082/{camera}"
@@ -166,7 +195,7 @@ def addCamera(camera,server):
     return "OK"
 
 @app.route('/api/cameras/<camera>')
-def getCamera(camera):
+def apiCameras(camera):
     if not cameras.exists():
         db.create_all()
     if camera == "all":

@@ -1,0 +1,41 @@
+version: '2.4'
+services:
+  fevr_flask:
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    image: beardedtek-com/fevr:flask
+    container_name: fevr_flask
+    restart: unless-stopped
+    privileged: true
+    networks:
+      fevrnet:
+        ipv4_address: ${FEVR_IP:-192.168.101.1}
+    volumes:
+      - ./:/fevr
+    environment:
+      FLASK_ENV: ${FLASK_ENV:-}
+      FEVR_PORT: ${FEVR_PORT:-5090}
+    command: /fevr/run_fevr.sh
+  fevr_mqtt:
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    image: beardedtek-com/fevr:flask
+    container_name: fevr_mqtt
+    restart: unless-stopped
+    privileged: true
+    networks:
+      fevrnet:
+        ipv4_address: ${MQTT_CLIENT_IP:-192.168.101.2}
+    volumes:
+      - ./:/fevr
+    command: /fevr/app/mqtt_client -f "${FEVR_IP:-192.168.101.1}:${FEVR_PORT:-5090}" -H "${MQTT_BROKER_IP:-192.168.2.87}" -p ${MQTT_BROKER_PORT:-1883} -t "${MQTT_TOPICS:-frigate/+}" -u "${MQTT_BROKER_USER:-}" -P "${MQTT_BROKER_PASS:-}"
+
+networks:
+  fevrnet:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: ${BRIDGE_SUBNET:-192.168.101.0/24}
+          gateway: ${BRIDGE_GATEWAY:-192.168.101.254}

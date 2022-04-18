@@ -2,3 +2,5 @@
 venv
 app/static/events/*
 app/*.sqlite
+.cache
+.local
