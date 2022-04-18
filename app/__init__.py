@@ -61,7 +61,8 @@ class frigate(db.Model):
     def toDict(query):
         result = {}
         for frigate in query:
-            result[frigate.name] = frigate.url
+            result['name'] = frigate.name
+            result['url'] = frigate.url
         return result
 
 class cameras(db.Model):
@@ -184,7 +185,7 @@ def apiAddEvent(eventid,camera,score,object):
     fetchPath = f"{os.getcwd()}/app/static/events/{eventid}/"
     print(fetchPath)
     frigateConfig = apiFrigate()
-    frigateURL = frigateConfig['frigate']
+    frigateURL = frigateConfig['url']
     fetchEvent = Fetch(fetchPath,eventid,frigateURL)
     return fetchEvent
 
