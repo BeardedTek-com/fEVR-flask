@@ -1,10 +1,10 @@
 version: '2.4'
 services:
   fevr_flask:
-    build:
-      context: ./
-      dockerfile: Dockerfile
-    image: beardedtek-com/fevr:flask
+#    build:
+#      context: ./
+#      dockerfile: Dockerfile
+    image: ghcr.io/beardedtek-com/fevr-flask:main
     container_name: fevr_flask
     restart: unless-stopped
     privileged: true
