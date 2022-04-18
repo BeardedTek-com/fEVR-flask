@@ -1,4 +1,5 @@
-from flask import Flask, render_template
+from flask import Flask, render_template, escape
+from werkzeug import utils
 from flask_sqlalchemy import SQLAlchemy, inspect
 import json
 import subprocess
@@ -19,11 +20,11 @@ class Fetch:
         self.event = eventid
         self.frigate = frigate
         self.thumbSize = thumbsize
-        self.thumbPATH = f"{self.path}thumb.jpg"
-        self.clipPATH = f"{self.path}clip.mp4"
-        self.snapPATH = f"{self.path}snapshot.jpg"
-        self.snap = f"{self.frigate}api/events/{eventid}/snapshot.jpg"
-        self.clip = f"{self.frigate}api/events/{eventid}/clip.mp4"
+        self.thumbPATH = utils.secure_filename(f"{self.path}thumb.jpg")
+        self.clipPATH = utils.secure_filename(f"{self.path}clip.mp4")
+        self.snapPATH = utils.secure_filename(f"{self.path}snapshot.jpg")
+        self.snap = utils.secure_filename(f"{self.frigate}api/events/{eventid}/snapshot.jpg")
+        self.clip = utils.secure_filename(f"{self.frigate}api/events/{eventid}/clip.mp4")
         print(self.frigate)
         print(self.event)
         print(self.thumbPATH)
@@ -33,7 +34,7 @@ class Fetch:
         print(self.clip)
         self.getEvent()
     def getEvent(self):
-        if not os.path.exists(self.thumbPATH):
+        if not os.path.exists(utils.secure_filename(self.thumbPATH)):
             if not os.path.exists(self.path):
                 os.makedirs(self.path)
             open(self.snapPATH,'wb').write(requests.get(self.snap, allow_redirects=True).content)
@@ -163,7 +164,7 @@ def apiAddFrigate(name,http,ip,port):
     Frigate = frigate(name=name,url=url)
     db.session.add(Frigate)
     db.session.commit()
-    return {"name":name,"url":url}
+    return {"name":escape(name),"url":escape(url)}
 
 @app.route('/api/frigate')
 def apiFrigate():
