@@ -61,8 +61,7 @@ class frigate(db.Model):
     def toDict(query):
         result = {}
         for frigate in query:
-            result['name'] = frigate.name
-            result['url'] = frigate.url
+            result[frigate.name] = frigate.url
         return result
 
 class cameras(db.Model):
@@ -127,6 +126,8 @@ def viewAll():
 
 @app.route('/event/<eventid>/<view>')
 def viewSingle(eventid,view):
+    Frigate = apiFrigate()
+    frigateURL = Frigate['external']
     if view == 'ack':
         apiAckEvent(eventid)
     elif view == 'unack':
@@ -144,7 +145,7 @@ def viewSingle(eventid,view):
         event = query[item]
         print(f"EVENT: {event}")
     title = f"<div class='back'><a href='/'><img src='/static/img/back.svg'></a></div><div>{event['object'].title()} in {event['camera'].title()}</div><div>{view.title()}</div>"
-    return render_template('home.html',page=page,title=title,event=event,view=view)
+    return render_template('home.html',page=page,title=title,event=event,view=view,frigateURL=frigateURL)
 
 # API Routes
 @app.route('/api')
@@ -169,11 +170,18 @@ def apiFrigate():
     if frigate.exists():
         db.create_all()
     query = frigate.query.all()
-    if frigate.toDict(query):
-        return frigate.toDict(query)
+    frigates = frigate.toDict(query)
+
+    if frigates['frigate']:
+        internal = frigates['frigate']
     else:
-        ### ADD SETUP ROUTINE ###
-        return {"frigate":"http://192.168.2.240:5000/"}
+        internal = "http://192.168.2.240:5000"
+    if frigates['external']:
+        external = frigates['external']
+    else:
+        external = internal
+    return {"frigate":internal,"external":external}
+
 
 @app.route('/api/events/add/<eventid>/<camera>/<object>/<score>')
 def apiAddEvent(eventid,camera,score,object):

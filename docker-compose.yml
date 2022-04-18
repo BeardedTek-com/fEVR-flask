@@ -2,13 +2,16 @@ version: '2.4'
 services:
   tailscale:
     image: tailscale/tailscale
-    container_name: tailscale
+    container_name: fevr_tailscale
     restart: unless-stopped
     privileged: true
     volumes:
-      - /var/lib:/var/lib
+      - ./tailscale/varlib:/var/lib
       - /dev/net/tun:/dev/net/tun
-      - /run_tailscale.sh:/run.sh
+      - ./run_tailscale.sh:/run.sh
+    cap_add:
+      - net_admin
+      - sys_module
     environment:
       AUTH_KEY: ${AUTH_KEY}
     command: /run.sh

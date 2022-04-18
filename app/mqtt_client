@@ -55,50 +55,46 @@ class fevrMQTT:
 
     def getVars(self):
         parser = argparse.ArgumentParser()
-        parser.add_argument('-H','--host',type=str,required=False)
+        parser.add_argument('mqtt',type=str)
         parser.add_argument('-p','--port',type=int,required=False)
+        parser.set_defaults(port=1883)
         parser.add_argument('-t','--topics',type=str,required=False)
+        parser.set_defaults(topics="frigate/+")
         parser.add_argument('-u','--user',type=str,required=False)
+        parser.set_defaults(user="")
         parser.add_argument('-P','--password',type=str,required=False)
+        parser.set_defaults(password="")
         parser.add_argument('-f','--fevr',type=str,required=False)
+        parser.set_defaults(fevr='192.168.101.1')
+        parser.add_argument('-s','--https',action='store_true')
+        parser.set_defaults(https=False)
         args = parser.parse_args()
 
-        def noneCheck(var,default):
-            if var == None:
-                var = default
-            return var
-        if args.fevr:
-            self.fevr = args.fevr
+        self.fevr = args.fevr
+        self.broker = args.mqtt
+        self.port = args.port
+        self.username = args.user
+        self.password = args.password
+        topics = args.topics
+
+        if args.https:
+            self.transport = "https://"
         else:
-            self.fevr = str(noneCheck(getenv('FEVR_URL'),'http://127.0.0.1:5080'))
-        if args.host:
-            self.broker = args.host
-        else:
-            self.broker = str(noneCheck(getenv('MQTT_BROKER_URL'),'192.168.100.5'))
-        if args.port:
-            self.port = args.port
-        else:
-            self.port = int(noneCheck(getenv('MQTT_BROKER_PORT'),'1883'))
-        if args.user:
-            self.username = args.user
-        else:
-            self.username = str(noneCheck(getenv('MQTT_USER'),''))
-        if args.password:
-            self.password = args.password
-        else:
-            self.password = str(noneCheck(getenv('MQTT_PASS'),''))
-        if args.topics:
-            topics = args.topics
-        else:
-            topics = noneCheck(getenv('MQTT_TOPICS'),'frigate/+')
+            self.transport = "http://"
+        
         self.topics = []
         topics = topics.split(',',5)
         count=0
+        excluded = None
         for topic in topics:
             if 4 >= count:
                 self.topics.append(topic)
             else:
-                self.error.execute(f"Topic Limit Exceeded\nTopics Included: {self.topics}",src=self.script)
+                if 5 == count:
+                    excluded = f"Topic Limit Exceeded. Excluded Topics: "
+                excluded += f"'{topic}' "
+        if excluded:
+            self.error.execute(excluded,src=self.script)
 
     def connect_mqtt(self) -> mqtt_client:
         def on_connect(client, userdata, flags, rc):
@@ -144,7 +140,7 @@ class fevrMQTT:
                 score = after['score']
                 camera = after['camera']
                 eventid = after['id']
-                self.error.execute(requests.get(f"{self.fevr}/api/events/add/{eventid}/{camera}/{type}/{score}"),src=self.script)
+                self.error.execute(requests.get(f"{self.transport}{self.fevr}/api/events/add/{eventid}/{camera}/{type}/{score}"),src=self.script)
 
     def subscribe(self, client: mqtt_client):
         def on_message(client, userdata, msg):

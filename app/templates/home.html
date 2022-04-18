@@ -59,7 +59,7 @@
                 <source src="/static/events/{{event['eventid']}}/clip.mp4" type="video/mp4">
             </video>
             {% elif view == 'live' %}
-            <img src="http://192.168.2.240:5000/api/{{event['camera']}}?h=720&amp;bbox=1&amp;motion=1">
+            <img src="{{frigateURL}}/api/{{event['camera']}}?h=720&amp;bbox=1&amp;motion=1">
             {% endif %}
             <div class="{% if event['ack'] == 'true' %}hidden{% else %}new{% endif %}">NEW</div>
         </div>
