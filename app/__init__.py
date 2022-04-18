@@ -31,7 +31,7 @@ class Fetch:
         print(self.clipPATH)
         print(self.snap)
         print(self.clip)
-        self.getEvent()
+        return self.getEvent()
     def getEvent(self):
         if not os.path.exists(self.thumbPATH):
             if not os.path.exists(self.path):
@@ -45,6 +45,26 @@ class Fetch:
         if os.path.exists(img):
             # Resizes an image from the filesystem
             Image.open(img).resize((int(height*ratio),height), Image.ANTIALIAS).save(self.thumbPATH,"JPEG", quality=75,optimize=True)
+
+class frigate(db.Model):
+    id = db.Column(db.Integer,primary_key = True)
+    url = db.Column(db.String(200), unique = True)
+    name = db.Column(db.String(100), unique = True)
+
+    def __repr__(self):
+        return str({"id":self.id,"url":self.url,"name":self.name})
+
+    def exists():
+        inspector = inspect(db.engine)
+        return inspector.has_table("frigate")
+
+    def toDict(query):
+        result = {}
+        for frigate in query:
+            result[frigate.name] = {
+                "url"   : frigate.url,
+            }
+        return result
 
 class cameras(db.Model):
     id = db.Column(db.Integer,primary_key = True)
@@ -136,6 +156,25 @@ def apiHome():
     contents = subprocess.Popen("flask routes", shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()[0].decode("utf-8")
     return render_template('home.html',page=page,title=title, contents=contents)
 
+@app.route('/api/frigate/add/<name>/<url>')
+def apiAddFrigate(name,url):
+    db.create_all()
+    Frigate = frigate(name=name,url=url)
+    db.session.add(Frigate)
+    db.session.commit()
+    return {"name":name,"url":url}
+
+@app.route('/api/frigate')
+def apiFrigate():
+    if frigate.exists():
+        db.create_all()
+    query = frigate.query.all()
+    if frigate.toDict(query):
+        return frigate.toDict(query)
+    else:
+        ### ADD SETUP ROUTINE ###
+        return {"frigate":"http://192.168.2.240:5000/"}
+
 @app.route('/api/events/add/<eventid>/<camera>/<object>/<score>')
 def apiAddEvent(eventid,camera,score,object):
     db.create_all()
@@ -145,8 +184,10 @@ def apiAddEvent(eventid,camera,score,object):
     db.session.commit()
     fetchPath = f"{os.getcwd()}/app/static/events/{eventid}/"
     print(fetchPath)
-    fetchEvent = Fetch(fetchPath,eventid,'http://192.168.2.240:5000/')
-    return "OK"
+    frigateConfig = apiFrigate()
+    frigateURL = frigateConfig['frigate']
+    fetchEvent = Fetch(fetchPath,eventid,frigateURL)
+    return fetchEvent
 
 @app.route('/api/events/ack/<eventid>')
 def apiAckEvent(eventid):
