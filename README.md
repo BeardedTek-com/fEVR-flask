@@ -93,11 +93,11 @@ MQTT_CLIENT_IP=192.168.101.2
 
 Once it is up and running run the following command:
 ```
-wget http://<fevr-flask-ip>:<port>/api/frigate/add/frigate/<url>
+wget http://<fevr-flask-ip>:<port>/api/frigate/add/<name>/<http>/<ip>/<port>
 ```
 example:
 ```
-wget http://192.168.101.1:5090/api/frigate/add/frigate/192.168.101.10:5000
+wget http://192.168.101.1:5090/api/frigate/add/frigate/http/192.168.101.10/5000
 ```
 
 You can also open it as a link in your web browser of choice.

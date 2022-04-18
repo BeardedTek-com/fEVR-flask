@@ -156,9 +156,10 @@ def apiHome():
     contents = subprocess.Popen("flask routes", shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()[0].decode("utf-8")
     return render_template('home.html',page=page,title=title, contents=contents)
 
-@app.route('/api/frigate/add/<name>/<url>')
-def apiAddFrigate(name,url):
+@app.route('/api/frigate/add/<name>/<http>/<ip>/<port>')
+def apiAddFrigate(name,http,ip,port):
     db.create_all()
+    url = f"{http}://{ip}:{port}/"
     Frigate = frigate(name=name,url=url)
     db.session.add(Frigate)
     db.session.commit()
