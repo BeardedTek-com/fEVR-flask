@@ -5,3 +5,4 @@ app/*.sqlite
 .cache
 .local
 .bash_history
+.env
