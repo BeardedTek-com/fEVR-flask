@@ -61,9 +61,7 @@ class frigate(db.Model):
     def toDict(query):
         result = {}
         for frigate in query:
-            result[frigate.name] = {
-                "url"   : frigate.url,
-            }
+            result[frigate.name] = frigate.url
         return result
 
 class cameras(db.Model):

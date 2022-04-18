@@ -62,3 +62,4 @@ cd fevr
 ls
 cat run_fevr.sh
 exit
+exit

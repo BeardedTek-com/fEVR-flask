@@ -4,3 +4,4 @@ app/static/events/*
 app/*.sqlite
 .cache
 .local
+.bash_history
