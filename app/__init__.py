@@ -16,7 +16,7 @@ db = SQLAlchemy(app)
 
 class Fetch:
     def __init__(self,path,eventid,frigate,thumbsize=180):
-        self.path = path
+        self.path = utils.secure_filename(path)
         self.event = eventid
         self.frigate = frigate
         self.thumbSize = thumbsize
