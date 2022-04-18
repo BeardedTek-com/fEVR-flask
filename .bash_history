@@ -44,3 +44,21 @@ exit
 ps
 exit
 exit
+apt -l
+dpkg -l | grep pillow
+dpkg -l
+dpkg -l python
+dpkg -l python*
+dpkg -l *illow*
+dpkg -l *illow
+exit
+pip -l
+pip
+pip list | grep pillow
+pip list | grep illow
+cd /
+ls
+cd fevr
+ls
+cat run_fevr.sh
+exit
