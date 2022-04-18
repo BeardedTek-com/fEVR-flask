@@ -50,7 +50,9 @@
 <div id="container" class="eventsContainer">
     <div class='events'>
         <div class="eventView">
-            {% if view == 'snap' or 'ack' %}
+            {% if view == 'snap'%}
+            <img class='viewport' src='/static/events/{{ event["eventid"]}}/snapshot.jpg'>
+            {% elif view == 'ack'%}
             <img class='viewport' src='/static/events/{{ event["eventid"]}}/snapshot.jpg'>
             {% elif view == 'clip' %}
             <video class="viewport" controls>
