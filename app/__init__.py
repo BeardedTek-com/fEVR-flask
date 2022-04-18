@@ -31,7 +31,7 @@ class Fetch:
         print(self.clipPATH)
         print(self.snap)
         print(self.clip)
-        return self.getEvent()
+        self.getEvent()
     def getEvent(self):
         if not os.path.exists(self.thumbPATH):
             if not os.path.exists(self.path):
