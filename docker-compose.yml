@@ -10,7 +10,7 @@ services:
       - /dev/net/tun:/dev/net/tun
       - /run_tailscale.sh:/run.sh
     environment:
-      - AUTH_KEY: ${AUTH_KEY}
+      AUTH_KEY: ${AUTH_KEY}
     command: /run.sh
     networks:
       fevrnet:
