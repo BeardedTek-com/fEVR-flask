@@ -63,3 +63,11 @@ ls
 cat run_fevr.sh
 exit
 exit
+cd /fevr/app/templates
+ls
+nano *
+vi *
+cat *.html
+scp
+ssh
+exit

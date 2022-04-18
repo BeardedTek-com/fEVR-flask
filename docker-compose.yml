@@ -1,5 +1,21 @@
 version: '2.4'
 services:
+  tailscale:
+    image: tailscale/tailscale
+    container_name: tailscale
+    restart: unless-stopped
+    privileged: true
+    volumes:
+      - /var/lib:/var/lib
+      - /dev/net/tun:/dev/net/tun
+      - /run_tailscale.sh:/run.sh
+    environment:
+      - AUTH_KEY: ${AUTH_KEY}
+    command: /run.sh
+    networks:
+      fevrnet:
+        ipv4_address: ${TAILSCALE_IP:-192.168.101.253}
+    
   fevr_flask:
 #    build:
 #      context: ./
@@ -17,6 +33,7 @@ services:
       FLASK_ENV: ${FLASK_ENV:-}
       FEVR_PORT: ${FEVR_PORT:-5090}
     command: /fevr/run_fevr.sh
+
   fevr_mqtt:
     build:
       context: ./
