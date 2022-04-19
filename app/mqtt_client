@@ -26,6 +26,7 @@ from math import floor
 from random import randint
 import socket
 import requests
+from math import floor
 
 class logit:
     def __init__(self,logfile="/var/www/logs/debug.log",debug=False):
@@ -137,7 +138,7 @@ class fevrMQTT:
             after = event['after']
             if type == 'end':
                 type = after['label']
-                score = after['score']
+                score = floor(float(after['score'])*100)
                 camera = after['camera']
                 eventid = after['id']
                 self.error.execute(requests.get(f"{self.transport}{self.fevr}/api/events/add/{eventid}/{camera}/{type}/{score}"),src=self.script)

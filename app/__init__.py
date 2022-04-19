@@ -16,15 +16,15 @@ db = SQLAlchemy(app)
 
 class Fetch:
     def __init__(self,path,eventid,frigate,thumbsize=180):
-        self.path = utils.secure_filename(path)
+        self.path = path
         self.event = eventid
         self.frigate = frigate
         self.thumbSize = thumbsize
-        self.thumbPATH = utils.secure_filename(f"{self.path}thumb.jpg")
-        self.clipPATH = utils.secure_filename(f"{self.path}clip.mp4")
-        self.snapPATH = utils.secure_filename(f"{self.path}snapshot.jpg")
-        self.snap = utils.secure_filename(f"{self.frigate}api/events/{eventid}/snapshot.jpg")
-        self.clip = utils.secure_filename(f"{self.frigate}api/events/{eventid}/clip.mp4")
+        self.thumbPATH = f"{self.path}/thumb.jpg"
+        self.clipPATH = f"{self.path}/clip.mp4"
+        self.snapPATH = f"{self.path}/snapshot.jpg"
+        self.snap = f"{self.frigate}api/events/{eventid}/snapshot.jpg"
+        self.clip = f"{self.frigate}api/events/{eventid}/clip.mp4"
         print(self.frigate)
         print(self.event)
         print(self.thumbPATH)
@@ -34,7 +34,7 @@ class Fetch:
         print(self.clip)
         self.getEvent()
     def getEvent(self):
-        if not os.path.exists(utils.secure_filename(self.thumbPATH)):
+        if not os.path.exists(self.thumbPATH):
             if not os.path.exists(self.path):
                 os.makedirs(self.path)
             open(self.snapPATH,'wb').write(requests.get(self.snap, allow_redirects=True).content)
@@ -63,6 +63,7 @@ class frigate(db.Model):
         result = {}
         for frigate in query:
             result[frigate.name] = frigate.url
+        print(result)
         return result
 
 class cameras(db.Model):
@@ -119,9 +120,9 @@ class events(db.Model):
 
 # Main Routes
 @app.route('/')
-def viewAll():
+def viewMain():
     page = 'events'
-    title = 'frigate Event Video Recorder'
+    title = 'Latest Events'
     events = apiShowAllEvents()
     return render_template('home.html',page=page,title=title,events=events)
 
@@ -138,15 +139,29 @@ def viewSingle(eventid,view):
     elif view == 'delOK':
         apiDelEvent(eventid)
         apiHome()
-    query = events.query.filter_by(eventid=eventid)
+    query = events.query.filter_by(eventid=eventid).order_by()
     query = events.eventToDict(query)
     page= 'event'
     print(f"QUERY: {query}")
     for item in query:
         event = query[item]
         print(f"EVENT: {event}")
-    title = f"<div class='back'><a href='/'><img src='/static/img/back.svg'></a></div><div>{event['object'].title()} in {event['camera'].title()}</div><div>{view.title()}</div>"
-    return render_template('home.html',page=page,title=title,event=event,view=view,frigateURL=frigateURL)
+    if 'event' in locals():
+        title = f"<div class='back'><a href='/'><img src='/static/img/back.svg'></a></div><div class='objcam'>{event['object'].title()} in {event['camera'].title()}</div>"
+        xx = 0
+        for X in ['live','clip','snap']:
+            if view == X:
+                xx += 1
+        if xx > 0:
+            if view == 'clip' or view == 'snap':
+                title += f"<div class='view20'>Event {view.title()}</div>"
+            else:
+                title += f"<div class='view20'>{view.title()}</div>"
+        else:
+            title += "<div class='view20'> </div>"
+        return render_template('home.html',page=page,title=title,event=event,view=view,frigateURL=frigateURL)
+    else:
+        return viewMain()
 
 # API Routes
 @app.route('/api')
@@ -194,9 +209,10 @@ def apiAddEvent(eventid,camera,score,object):
     fetchPath = f"{os.getcwd()}/app/static/events/{eventid}/"
     print(fetchPath)
     frigateConfig = apiFrigate()
-    frigateURL = frigateConfig['url']
+    print(frigateConfig)
+    frigateURL = frigateConfig['frigate']
     fetchEvent = Fetch(fetchPath,eventid,frigateURL)
-    return fetchEvent
+    return viewMain()
 
 @app.route('/api/events/ack/<eventid>')
 def apiAckEvent(eventid):
@@ -212,9 +228,9 @@ def apiUnackEvent(eventid):
 
 @app.route('/api/events/del/<eventid>')
 def apiDelEvent(eventid):
-    query = events.query.filter_by(eventid=eventid)
-    db.session.delete(query)
+    events.query.filter_by(eventid=eventid).delete()
     db.session.commit()
+    return viewMain()
 
 
 @app.route('/api/events/all')

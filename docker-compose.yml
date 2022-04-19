@@ -38,10 +38,10 @@ services:
     command: /fevr/run_fevr.sh
 
   fevr_mqtt:
-    build:
-      context: ./
-      dockerfile: Dockerfile
-    image: beardedtek-com/fevr:flask
+#    build:
+#      context: ./
+#      dockerfile: Dockerfile
+    image: ghcr.io/beardedtek-com/fevr-flask:main
     container_name: fevr_mqtt
     restart: unless-stopped
     privileged: true

@@ -50,12 +50,12 @@
 <div id="container" class="eventsContainer">
     <div class='events'>
         <div class="eventView">
-            {% if view == 'snap'%}
+            {% if view == 'snap' or view == 'del' %}
             <img class='viewport' src='/static/events/{{ event["eventid"]}}/snapshot.jpg'>
-            {% elif view == 'ack'%}
+            {% elif view == 'ack' or view == 'unack' %}
             <img class='viewport' src='/static/events/{{ event["eventid"]}}/snapshot.jpg'>
             {% elif view == 'clip' %}
-            <video class="viewport" controls>
+            <video class="viewport" controls autoplay>
                 <source src="/static/events/{{event['eventid']}}/clip.mp4" type="video/mp4">
             </video>
             {% elif view == 'live' %}
@@ -64,14 +64,24 @@
             <div class="{% if event['ack'] == 'true' %}hidden{% else %}new{% endif %}">NEW</div>
         </div>
         <div class="eventControls">
-            <button onclick="window.location.href='/event/{{event['eventid']}}/clip'" class="eventControl">View Video</button>
-            <button onclick="window.location.href='/event/{{event['eventid']}}/live'" class="eventControl">Live Video</button>
-            {% if event['ack'] == "true" %}
-            <button onclick="window.location.href='/event/{{event['eventid']}}/unack'" class="eventControl">Mark Unseen</button>
+            {% if view == 'del' %}
+                <div class="delConfirm">Are you sure you want to delete this event?  it cannot be undone!!!!</div>
+                <button onclick="window.location.href='/event/{{event['eventid']}}/delOK'" class="eventControl danger">Yes, Delete Event</button>
+                <button onclick="window.location.href='/event/{{event['eventid']}}/snap'" class="eventControl danger">Cancel</button>
             {% else %}
-            <button onclick="window.location.href='/event/{{event['eventid']}}/ack'" class="eventControl">Mark Seen</button>
+                {% if view == 'clip' %}
+                    <button onclick="window.location.href='/event/{{event['eventid']}}/snap'" class="eventControl">Event Snapshot</button>
+                {% else %}
+                    <button onclick="window.location.href='/event/{{event['eventid']}}/clip'" class="eventControl">Event Video Clip</button>
+                {% endif %}
+                <button onclick="window.location.href='/event/{{event['eventid']}}/live'" class="eventControl">Live Video</button>
+                {% if event['ack'] == "true" %}
+                <button onclick="window.location.href='/event/{{event['eventid']}}/unack'" class="eventControl">Mark Unseen</button>
+                {% else %}
+                <button onclick="window.location.href='/event/{{event['eventid']}}/ack'" class="eventControl">Mark Seen</button>
+                {% endif %}
+                <button onclick="window.location.href='/event/{{event['eventid']}}/del'" class="eventControl danger">Delete Event</button>
             {% endif %}
-            <button onclick="window.location.href='/event/{{event['eventid']}}/delete'" class="eventControl danger">Delete Event</button>
         </div>
     </div>
 </div>
