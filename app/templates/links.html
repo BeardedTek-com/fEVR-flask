@@ -1,0 +1,14 @@
+{% macro navbar(current_user,page) -%}
+        {% if current_user.is_authenticated %}
+                <button onclick="window.location.href='/logout?page={{ page }}'">Logout</button>
+            {% if page == '/' %}
+            <button onclick="window.location.href='/all'">All Events</button>
+            {% else %}
+            <button onclick="window.location.href='/'">Latest</button>
+            {% endif %}
+            <button onclick="window.location.href='/api'">API Docs</button>
+        {% else %}
+                <button onclick="window.location.href='/login'">Login</button>
+                <button onclick="window.location.href='/signup'">Register</button>
+        {% endif %}
+{%- endmacro %}

@@ -6,3 +6,8 @@ app/*.sqlite
 .local
 .bash_history
 .env
+__pycache__
+.python_history
+.bash_history
+.bash_history
+.bash_history

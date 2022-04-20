@@ -6,8 +6,8 @@
         <meta http-equiv="X-UA-Compatible" content="ie=edge" />
 	    <meta name="mobile-web-app-capable" content="yes"/>
         <meta name="theme-color" content="#3B4248"/>
-        <link rel="apple-touch-icon" href="fEVR-192.png"/>
-        <link rel="icon" type="image/png" href="favicon.png">
+        <link rel="apple-touch-icon" href="/static/img/fEVR-192.png"/>
+        <link rel="icon" type="image/png" href="/static/img/favicon.png">
         <link rel="stylesheet" href="/static/css/main.css"/>
         <link rel="stylesheet" type="text/css" href="/static/css/landscape.css" media="screen and (orientation: landscape)">
         <link rel="stylesheet" type="text/css" href="/static/css/portrait.css" media="screen and (orientation: portrait)">
@@ -31,10 +31,8 @@
                 <a href="/"><img src="/static/img/fevr.svg"></a>
             </div>
             <div class="links">
-                <button onclick="window.location.href='/'"">All Events</button>
-                <button onclick="window.location.href='/api'"">API Docs</button>
-                <button onclick="window.open('https://github.com/beardedtek-com/fevr-flask','_blank')">GitHub</button>
-                <button onclick="window.open('https://fevr.video','_blank')">fevr.video</button>
+                {% import "links.html" as links %}
+                {{ links.navbar(current_user,page) }}
             </div>
         </div>
         <div class="content">
@@ -42,80 +40,17 @@
                 <div class="tagline">
                     {{ title|safe }}
                 </div>
-                <div class="doc">
-{% if page == 'apidocs' %}
-    <pre>{{ contents }}</pre>
-{% elif page == 'event' %}
-
-<div id="container" class="eventsContainer">
-    <div class='events'>
-        <div class="eventView">
-            {% if view == 'snap' or view == 'del' %}
-            <img class='viewport' src='/static/events/{{ event["eventid"]}}/snapshot.jpg'>
-            {% elif view == 'ack' or view == 'unack' %}
-            <img class='viewport' src='/static/events/{{ event["eventid"]}}/snapshot.jpg'>
-            {% elif view == 'clip' %}
-            <video class="viewport" controls autoplay>
-                <source src="/static/events/{{event['eventid']}}/clip.mp4" type="video/mp4">
-            </video>
-            {% elif view == 'live' %}
-            <img src="{{frigateURL}}/api/{{event['camera']}}?h=720&amp;bbox=1&amp;motion=1">
-            {% endif %}
-            <div class="{% if event['ack'] == 'true' %}hidden{% else %}new{% endif %}">NEW</div>
-        </div>
-        <div class="eventControls">
-            {% if view == 'del' %}
-                <div class="delConfirm">Are you sure you want to delete this event?  it cannot be undone!!!!</div>
-                <button onclick="window.location.href='/event/{{event['eventid']}}/delOK'" class="eventControl danger">Yes, Delete Event</button>
-                <button onclick="window.location.href='/event/{{event['eventid']}}/snap'" class="eventControl danger">Cancel</button>
-            {% else %}
-                {% if view == 'clip' %}
-                    <button onclick="window.location.href='/event/{{event['eventid']}}/snap'" class="eventControl">Event Snapshot</button>
-                {% else %}
-                    <button onclick="window.location.href='/event/{{event['eventid']}}/clip'" class="eventControl">Event Video Clip</button>
-                {% endif %}
-                <button onclick="window.location.href='/event/{{event['eventid']}}/live'" class="eventControl">Live Video</button>
-                {% if event['ack'] == "true" %}
-                <button onclick="window.location.href='/event/{{event['eventid']}}/unack'" class="eventControl">Mark Unseen</button>
-                {% else %}
-                <button onclick="window.location.href='/event/{{event['eventid']}}/ack'" class="eventControl">Mark Seen</button>
-                {% endif %}
-                <button onclick="window.location.href='/event/{{event['eventid']}}/del'" class="eventControl danger">Delete Event</button>
-            {% endif %}
-        </div>
-    </div>
-</div>
-
-{% elif page == 'events' %}
-<div id="container" class="eventsContainer">
-    {% if events|length > 0 %}
-        {% for event in events %}
-            <div class='events'>
-            <div class="eventThumb">
-            <a href='/event/{{ events[event]["eventid"] }}/snap'>
-            <img class='thumb' src='/static/events/{{ events[event]["eventid"]}}/thumb.jpg'>
-            </a>
-            <div class='eventsDetails'>
-            <div class='subdetail'>{{ events[event]["time"] }}</div>
-            <div class='subdetail'>{{ events[event]["object"] }}</div>
-            <div class='subdetail'>{{ events[event]["score"] }}%</div>
-            </div>
-            <div class="{% if events[event]['ack'] == 'true' %}hidden{% else %}new{% endif %}">NEW</div>
-            </div>
-            </div>
-        {% endfor %}
-    {% else %}
-        <div class="events">
-            Sorry, Nothing to see here yet.<br/>
-            SHOW SETUP DIALOGUE?
-        </div>
-    {% endif %}
-</div>
-{% endif %}
+                <div id="container" class="contentContainer">
+                    {% block content %}
+                    {% endblock %}
+                </div>
                     <div class="beard"></div>
                 </div>
                 <div class="footerContents">
-                    <span class='copyleft'>&copy;</span>2022 <a target='_blank' href='https://beardedtek.com'>The Bearded Tek</a><br/>
+                    <div class="footerContent"><span class='copyleft'>&copy;</span>2022 <a target='_blank' href='https://beardedtek.com'>BeardedTek.com</a></div>
+                    <div class="footerContent"><a href='https://github.com/beardedtek-com/fEVR/discussions' target='_blank'>Get Support</a></div>
+                    <div class="footerContent"><a href='https://fevr.video' target='_blank'>fevr.video</a></div>
+                    <div class="footerContent"><a href='https://github.com/beardedtek-com/fevr'>GitHub</a></div>
                 </div>
             </div>
             

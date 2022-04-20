@@ -1,0 +1,27 @@
+{% extends "home.html" %}
+
+{% block content %}
+{% if events|length > 0 %}
+    {% for event in events %}
+        <div class='events'>
+        <div class="eventThumb">
+        <a href='/event/{{ events[event]["eventid"] }}/snap'>
+        <img class='thumb' src='/static/events/{{ events[event]["eventid"]}}/thumb.jpg'>
+        </a>
+        <div class='eventsDetails'>
+        <div class='subdetail'>{{ events[event]["time"] }}</div>
+        
+        <div class='subdetail'>{{ events[event]["object"] }}</div>
+        <div class='subdetail'>{{ events[event]["score"] }}%</div>
+        </div>
+        <div class="{% if events[event]['ack'] == 'true' %}hidden{% else %}new{% endif %}">NEW</div>
+        </div>
+        </div>
+    {% endfor %}
+{% else %}
+    <div class="events">
+        Sorry, Nothing to see here yet.<br/>
+        SHOW SETUP DIALOGUE?
+    </div>
+{% endif %}
+{% endblock %}

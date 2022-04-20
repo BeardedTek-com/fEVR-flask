@@ -20,10 +20,10 @@ services:
         ipv4_address: ${TAILSCALE_IP:-192.168.101.253}
     
   fevr_flask:
-#    build:
-#      context: ./
-#      dockerfile: Dockerfile
-    image: ghcr.io/beardedtek-com/fevr-flask:main
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    image: beardedtek-com/fevr-flask:main
     container_name: fevr_flask
     restart: unless-stopped
     privileged: true

@@ -37,13 +37,14 @@ a:hover{
 .back{
     width: 10%;
 }
-.eventsContainer{
+.contentContainer{
     display: flex;
     flex-flow:row wrap;
     justify-content: center;
     overflow:hidden;
     overflow-wrap: break-word;
     width: 100%;
+    min-height: 80vh;
     padding-top: 0.25em;
 }
 .event{
@@ -56,7 +57,7 @@ a:hover{
     margin-top: 1em;
 }
 .events{
-    padding: 0 1em 1em 0;
+    padding: 0 0.75em 0.75em 0;
 }
 .eventTitle{
     font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
@@ -214,6 +215,9 @@ button.enabled:hover{
     cursor: pointer;
     background: rgb(203, 213, 216);
 }
+button:hover{
+    cursor: pointer;
+}
 .disabled{
     opacity: 0.33;
 }
@@ -239,10 +243,15 @@ button.enabled:hover{
 .eventThumb{
     position: relative;
     display: flex;
+    background-color: black;
 }
 .eventThumb img{
     height: 180px;
     width: 320px;
+    opacity: 1;
+}
+.eventThumb img:hover{
+    opacity: 0.8;
 }
 .eventView{
     position: relative;
@@ -398,14 +407,11 @@ select:hover{
         width: 80vw;
         height: 2.5em;
     }
-    .eventsContainer{
+    .contentContainer{
         justify-content: center;
     }
 }
 @media screen and (max-width: 600px) {
-    .eventsContainer{
-        justify-content:center;
-    }
     .eventInfo{
         font-size: 1.25rem;
         padding-top: 20px;

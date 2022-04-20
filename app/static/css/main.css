@@ -190,10 +190,45 @@ img{
     width: 100%;
 }
 .footerContents{
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
     text-align: center;
     font-family:var(--mainFont);
     color: var(--primaryTextColor);
-    font-size: 1.5em;
+    font-size: 1.5rem;
+    min-height: 80%;
+    width: 100%;
+    max-width: 1025;
+    padding-left: 0.25em;
+    padding-right: 0.25em;
+    filter: drop-shadow(0 0 1em rgba(19, 19, 20,0.6));
+}
+.footerContents button{
+    border: none;
+    cursor: pointer;
+    margin: 0.25em 0.25em;
+    display: inline-block;
+    background-color: var(--buttonBackground);
+    opacity: 0.8;
+    color: var(--buttonText);
+    font-family:var(--mainFont);
+    font-size: 0.9em;
+    padding: 0.25em 0.5em;
+    border-radius: 0.5em;
+    min-width: var(--navbarButtonMinWidth);
+    filter: drop-shadow(0.1em 0.2em 3px rgba(19, 19, 20,0.6));
+}
+.footerContents button:hover{
+    color: var(--buttonTextHover);
+    background-color: var(--buttonBackgroundHover);
+    filter: drop-shadow(0.2em 0.35em 2px rgba(19, 19, 20,0.6));
+}
+.footerContent{
+    padding-left: 1em;
+}
+.footerContent a{
+    font-size: 1em;
 }
 a{
     color: var(--linkTextColor);
@@ -244,4 +279,57 @@ a:hover{
     width: 100%;
     height: 100%;
     z-index: -1;
+}
+.notification{
+    text-align: center;
+    font-size: 0.75em;
+}
+.login{
+    display: flex;
+    height: auto;
+    min-width: 250px;
+    width: 45%;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    flex-wrap: nowrap;
+    align-content: center;
+    font-size: 1.5em;
+}
+.login input{
+    height: 1.25em;
+    padding: 1em;
+    margin: 0.25em;
+    font-size: 1em;
+    width: 98%;
+}
+.login .checkbox{
+    height: 1em;
+    width: 1em;
+}
+.login label{
+    position: relative;
+    bottom: 0.125em;
+    height: 1em;
+}
+.login button{
+    position: relative;
+    height: 2em;
+    margin: 0.25em;
+    width: 100%;
+    margin: unset;
+    margin-top: 0.5em;
+
+    border: none;
+    cursor: pointer;
+    display: inline-block;
+    background-color: var(--buttonBackground);
+    opacity: 0.8;
+    color: var(--buttonText);
+    font-family:var(--mainFont);
+    font-size: 0.9em;
+    padding: 0.25em 0.5em;
+    border-radius: 0.5em;
+    min-width: var(--navbarButtonMinWidth);
+    filter: drop-shadow(0.1em 0.2em 3px rgba(19, 19, 20,0.6));
 }
