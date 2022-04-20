@@ -4,11 +4,14 @@ from sqlalchemy import desc
 import subprocess
 from datetime import datetime
 import os
-from .models import events,frigate,cameras,User
+from IPy import IP
+
+from .models import events,frigate,cameras,User,apiAuth
 from . import db
 from .logit import logit
 from .fetch import Fetch
 from .auth import apiAuth
+from .rndpwd import randpwd
 main = Blueprint('main',__name__)
 
 # Main Routes
@@ -77,7 +80,6 @@ def apiHome():
     return render_template('api.html',page=page,title=title, contents=contents)
 
 @api.route('/api/frigate/add/<name>/<http>/<ip>/<port>')
-@login_required
 def apiAddFrigate(name,http,ip,port):
     db.create_all()
     url = f"{http}://{ip}:{port}/"
@@ -87,7 +89,6 @@ def apiAddFrigate(name,http,ip,port):
     return {"name":escape(name),"url":escape(url)}
 
 @api.route('/api/frigate')
-@login_required
 def apiFrigate():
     if frigate.exists():
         db.create_all()
@@ -105,6 +106,7 @@ def apiFrigate():
     return {"frigate":internal,"external":external}
 
 @api.route('/api/events/add/<eventid>/<camera>/<object>/<score>')
+@login_required
 def apiAddEvent(eventid,camera,score,object):
     def addEvent(eventid,camera,score,object):
         db.create_all()
@@ -125,11 +127,12 @@ def apiAddEvent(eventid,camera,score,object):
     if events.query.filter_by(eventid=eventid).first():
         return jsonify({"msg":"Event Already Exists"})
     # Are they authorized?
-    elif apiAuth.exe():
+#    elif apiAuth.exe():
+    else:
         addEvent(eventid,camera,score,object)
         return 'Success', 200
-    else:
-        return 'Not Authorized', 200
+#    else:
+#        return 'Not Authorized', 200
 @api.route('/api/admin/events/add/<eventid>/<camera>/<object>/<score>')
 @login_required
 def apiAdminAddEvent(eventid,camera,score,object):
@@ -223,3 +226,27 @@ def apiCameras(camera):
     else:
         query = cameras.query.filter_by(camera=camera)
     return cameras.dict(query)
+
+@api.route('/api/auth/add/key/<name>/<ip>/<limit>')
+@login_required
+def apiAuthKeyAdd(name,ip,limit):
+    def validIP(ip):
+        try:
+            IP(ip)
+            return True
+        except:
+            return False
+    if current_user.group == "admin":
+        if validIP(ip):
+            db.create_all()
+            key = randpwd.generate(key=True)
+            auth = apiAuth(name=name,authIP=ip,key=key,limit=int(limit))
+            db.session.add(auth)
+            db.session.commit()
+            value = {"Authorized":True,"name":name,"ip":ip,"limit":limit,"key":key,"expired":False}
+        else:
+            value = {"Authorized":False,"Reason":"Invalid IP"}
+    else:
+        value = {"Authorized":False,"Reason":"Admin Only"}
+    return jsonify(value)
+    

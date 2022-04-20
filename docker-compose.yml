@@ -50,11 +50,12 @@ services:
         ipv4_address: ${MQTT_CLIENT_IP:-192.168.101.2}
     volumes:
       - ./:/fevr
-    command: /fevr/app/mqtt_client -f "${FEVR_IP:-192.168.101.1}:${FEVR_PORT:-5090}" -p ${MQTT_BROKER_PORT:-1883} -t "${MQTT_TOPICS:-frigate/+}" -u "${MQTT_BROKER_USER:-}" -P "${MQTT_BROKER_PASS:-}" "${MQTT_BROKER_IP:-192.168.2.87}"
+    command: /fevr/app/mqtt_client -f "${FEVR_IP:-192.168.101.1}:${FEVR_PORT:-5090}" -p ${MQTT_BROKER_PORT:-1883} -t "${MQTT_TOPICS:-frigate/+}" -u "${MQTT_BROKER_USER:-}" -P "${MQTT_BROKER_PASS:-}" "${MQTT_BROKER_IP:-192.168.2.87}" "${API_KEY}"
      #usage: mqtt_client [-h] [-p PORT] [-t TOPICS] [-u USER] [-P PASSWORD] [-f FEVR] [-s] mqtt
      #
      #positional arguments:
      #  mqtt                  MQTT Broker IP/FQDN **Required** (default: None)
+     #  key                   fEVR API Key        **Required** (default: None)
      #
      #optional arguments:
      #  -h, --help            show this help message and exit

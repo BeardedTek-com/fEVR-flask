@@ -192,11 +192,12 @@ img{
 .footerContents{
     display: flex;
     flex-direction: row;
+    flex-wrap: wrap;
     justify-content: center;
     text-align: center;
     font-family:var(--mainFont);
     color: var(--primaryTextColor);
-    font-size: 1.5rem;
+    font-size: 1em;
     min-height: 80%;
     width: 100%;
     max-width: 1025;

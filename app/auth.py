@@ -1,19 +1,52 @@
-from flask import Blueprint, render_template, redirect, url_for, request, flash
+import ipaddress
+from flask import Blueprint, render_template, redirect, url_for, request, flash, jsonify
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import login_user, logout_user, login_required
-from .models import User
+from .models import User, apiAuth
 from . import db
 
-class apiAuth:
-    def exe():
-        user_agent = request.headers.get('User-Agent')
-        if 'python-requests' in user_agent and request.remote_addr == '192.168.101.2' or request.remote_addr == '127.0.0.1':
-            return True
-        else:
-            return False
-
+    
 
 auth = Blueprint('auth', __name__)
+
+@auth.route('/apiAuth',methods=['POST'])
+def apiAuthenticate():
+    ip = request.remote_addr
+    auth = {"auth": False,"user":None,"ip":ip}
+    requestData = request.get_json()
+    key = None
+    if 'key' in requestData:
+        key = requestData['key']
+        entry = apiAuth.query.filter_by(key=key).first()
+        if entry:
+            auth = {"auth":False,"name":None,"authIP":None,"changed":False,"remember":False}
+            # Check if all of the following match:
+            #   - ip address
+            #   - key
+            #   - key expiry
+            if entry.key==key and not entry.expired:
+                auth['auth'] = True
+                auth['name'] = entry.name
+                auth['authIP'] = ip
+                
+                login_user(entry,remember=False)
+                
+                # Check the key limits
+                # Keys can be use limited.
+                # A user that has just a limited key can only log into the site X number of times before key expires
+                if entry.limit != 0:
+                    if entry.limit > 1:
+                        entry.limit -= 1
+                        auth['changed'] = True
+                    # If this is the key's last use, make sure to expire it.
+                    elif entry.limit == 1:
+                        entry.limit = 0
+                        entry.expired = True
+                        auth['changed'] = True
+                # If we changed they key limit or set it to expired, commit it to the database.
+                if auth['changed']:
+                    db.session.commit()
+    return jsonify(auth)
 
 @auth.route('/login',methods=['GET'])
 def login():
