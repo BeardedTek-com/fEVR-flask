@@ -27,33 +27,27 @@ from random import randint
 import socket
 import requests
 from math import floor
+import sys
 
 class logit:
-    def __init__(self,logfile="/var/www/logs/debug.log",debug=False):
-        self.logfile = logfile
-        self.debug = False
-        if environ.get('FEVR_DEBUG', 'false').lower() == "true" or debug == True:
-            self.debug = True
-
-    def execute(self,msg,src='fEVR',level='debug',logpath='/var/www/logs'):
+    def __init__(self,,debug=False):
+            self.debug = debug
+    def execute(self,msg,src='fEVR'):
+        def to_stderr(*a):
+            print(*a, file=sys.stderr)
         self.logtime = "{:.4f}".format(time())
-        self.logfile = f"{logpath}/{level}.log"
         logentry = f"{self.logtime} {str(msg)}"
-        self.to_stderr(f"[ {src:15}] {logentry}")
-    def to_stderr(self, *a):
-        import sys
-        print(*a, file=sys.stderr)
-        
+        if self.debug:
+            to_stderr(f"[ {src:15}] {logentry}")
+
 class fevrMQTT:
     def __init__(self):
-        
         self.script = 'mqtt_client'
         self.error = logit(debug=True)
         hostname = socket.gethostname()
         self.clientID = f"fevr-{hostname}-{randint(0,100)}"
         self.getVars()
         self.run()
-
     def getVars(self):
         parser = argparse.ArgumentParser()
         parser.add_argument('mqtt',type=str, help="MQTT Broker IP/FQDN **Required** (default: None)")
@@ -71,20 +65,17 @@ class fevrMQTT:
         parser.add_argument('-s','--https',action='store_true',help="If set uses https:// (default: http://)")
         parser.set_defaults(https=False)
         args = parser.parse_args()
-
         self.fevr = args.fevr
         self.broker = args.mqtt
         self.port = args.port
         self.username = args.user
         self.password = args.password
-        self.apikey = dumps(args.key)
+        self.apikey = args.key
         topics = args.topics
-
         if args.https:
             self.transport = "https://"
         else:
             self.transport = "http://"
-        
         self.topics = []
         topics = topics.split(',',5)
         count=0
@@ -98,7 +89,6 @@ class fevrMQTT:
                 excluded += f"'{topic}' "
         if excluded:
             self.error.execute(excluded,src=self.script)
-
     def connect_mqtt(self) -> mqtt_client:
         def on_connect(client, userdata, flags, rc):
             if rc == 0:
@@ -112,7 +102,6 @@ class fevrMQTT:
         client.on_connect = on_connect
         client.connect(self.broker, self.port)
         return client
-    
     def processMsg(self,msg,topic):
         if 'available' in topic:
             self.error.execute('frigate is online',src=self.script)
@@ -129,15 +118,16 @@ class fevrMQTT:
                     uptimeM = floor(uptimeM - (uptimeH*60))
                     uptimeD=floor(uptimeH/24)
                     uptimeH = floor(uptimeH - (uptimeD*24))
-
                     if 1 > uptimeD:
                         uptimeD = 0
                     uptimeStr = f"Uptime: {uptimeD} days, {uptimeH} hours, {uptimeM} minutes and {uptimeS} seconds."
                     self.error.execute(f"\t{uptimeStr}",src=self.script)
         elif 'event' in topic:
             #First we must post our API Key
-            JsonPost = {"key":self.apikey}
-            authResponse = requests.post(f"{self.transport}{self.fevr}/apiAuth", json=JsonPost)
+            rSession = requests.Session()
+            JsonPost = {}
+            JsonPost['key'] = self.apikey
+            authResponse = rSession.post(f"{self.transport}{self.fevr}/apiAuth", json=JsonPost)
             self.error.execute(authResponse.content,src=self.script)
             event = loads(msg)
             type = event['type']
@@ -147,9 +137,8 @@ class fevrMQTT:
                 score = floor(float(after['score'])*100)
                 camera = after['camera']
                 eventid = after['id']
-                addEventResponse = requests.get(f"{self.transport}{self.fevr}/api/events/add/{eventid}/{camera}/{type}/{score}")
+                addEventResponse = rSession.get(f"{self.transport}{self.fevr}/api/events/add/{eventid}/{camera}/{type}/{score}")
                 self.error.execute(addEventResponse.content,src=self.script)
-
     def subscribe(self, client: mqtt_client):
         def on_message(client, userdata, msg):
             ## This is where our code goes to do what we want when a message is received
@@ -157,11 +146,9 @@ class fevrMQTT:
         for topic in self.topics:
             client.subscribe(topic)
         client.on_message = on_message
-
     def run(self):
         self.client = self.connect_mqtt()
         self.subscribe(self.client)
         self.client.loop_forever()
-
 if __name__ == '__main__':
     fevrMQTT()

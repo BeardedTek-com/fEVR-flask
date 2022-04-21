@@ -1,13 +1,66 @@
 import ipaddress
 from flask import Blueprint, render_template, redirect, url_for, request, flash, jsonify
 from werkzeug.security import generate_password_hash, check_password_hash
-from flask_login import login_user, logout_user, login_required
+from flask_login import login_user, logout_user, login_required, current_user
+from IPy import IP
+
 from .models import User, apiAuth
 from . import db
 from .logit import logit
+from .rndpwd import randpwd
+
 log=logit()  
 
 auth = Blueprint('auth', __name__)
+
+@auth.route('/auth/add/key/<name>/<ip>/<limit>')
+@login_required
+def apiAuthKeyAdd(name,ip,limit):
+    def validIP(ip):
+        try:
+            IP(ip)
+            return True
+        except:
+            return False
+    if current_user.group == "admin":
+        if validIP(ip):
+            db.create_all()
+            key = randpwd.generate(key=True)
+            auth = apiAuth(name=name,authIP=ip,key=key,limit=int(limit))
+            db.session.add(auth)
+            db.session.commit()
+            value = {"Authorized":True,"name":name,"ip":ip,"limit":limit,"key":key,"expired":False}
+        else:
+            value = {"Authorized":False,"Reason":"Invalid IP"}
+    else:
+        value = {"Authorized":False,"Reason":"Admin Only"}
+    return jsonify(value)
+
+@auth.route('/auth/add/key',methods=['POST'])
+@login_required
+def apiAuthKeyAddPost():
+    def validIP(ip):
+        try:
+            IP(ip)
+            return True
+        except:
+            return False
+    ip = request.form.get('ip')
+    name = request.form.get('name')
+    limit = request.form.get('limit')
+    if current_user.group == "admin":
+        if validIP(ip):
+            db.create_all()
+            key = randpwd.generate(key=True)
+            auth = apiAuth(name=name,authIP=ip,key=key,limit=int(limit))
+            db.session.add(auth)
+            db.session.commit()
+            value = {"Authorized":True,"name":name,"ip":ip,"limit":limit,"key":key,"expired":False}
+        else:
+            value = {"Authorized":False,"Reason":"Invalid IP"}
+    else:
+        value = {"Authorized":False,"Reason":"Admin Only"}
+    return jsonify(value)
 
 @auth.route('/apiAuth',methods=['POST'])
 def apiAuthenticate():
@@ -19,16 +72,16 @@ def apiAuthenticate():
     if 'key' in requestData:
         key = requestData['key']
         log.execute(f"  [ apiAuth Received API KEY ]: {key}",src=__name__)
-        entries = apiAuth.query.all()
+        entries = apiAuth.query.filter_by(key=key).first()
         if entries:
             for entry in entries:
                 if entry.key == key:
+                    log.execute(f"  [ apiAuth Expected Key ]: {entry.key}")
+                    log.execute(f"  [ apiAuth Received Key ]: {key}")
                     # Check if all of the following match:
                     #   - ip address
                     #   - key
                     #   - key expiry
-                    log.execute(f"  [ apiAuth Expected Key ]: {entry.key}")
-                    log.execute(f"  [ apiAuth Received Key ]: {key}")
                     if entry.key==key and not entry.expired:
                         auth['auth'] = True
                         auth['name'] = entry.name
@@ -126,3 +179,10 @@ def logout():
         fwd.replace('%2F','/')
     logout_user()
     return redirect(fwd)
+
+@auth.route('/profile')
+@login_required
+def profile():
+    user = current_user
+    keys = apiAuth.query.all()
+    return render_template('user.html',user=user,keys=keys)

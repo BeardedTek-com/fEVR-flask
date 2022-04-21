@@ -121,13 +121,13 @@ MQTT_TOPICS="frigate/+"
 #             This will be used in the future for one-time passwords.
 #             Set this to 0 for unlimited.
 # Example: https://fevr.local/api/auth/add/key/mqtt/all/0
-API_KEY=""
+API_KEY=
 #####################################################################
 
 #Tailscale
 #####################################################################
 # Obtain Auth Key from https://login.tailscale.com/admin/authkeys
-AUTH_KEY=tskey-ksMEvS5CNTRL-81zx6mrGvVgpwQDf5xDTF
+AUTH_KEY=
 TAILSCALE_IP=192.168.101.253
 #####################################################################
 

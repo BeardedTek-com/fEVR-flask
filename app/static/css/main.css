@@ -189,6 +189,57 @@ img{
     font-size: 1em;
     width: 100%;
 }
+.noInput{
+    padding: 0.5em;
+    padding-left: 1.5em;
+}
+.keystitle{
+    font-size: 2em;
+    padding-top: 1em;
+    padding-bottom: 1em;
+    text-align: center;
+}
+.keyitem{
+    display: flex;
+    padding-top: 1em;
+    padding-bottom: 1em;
+}
+.keyname{
+    width: 15%;
+    text-align: center;
+}
+.keyIP{
+    width: 15%;
+    text-align: center;
+}
+.key{
+    word-break: break-all;
+    width: 60%
+}
+.keylabel{
+    width: 60%;
+}
+.keylist{
+    padding-bottom: 2em;
+}
+.keylimit{
+    width: 5%;
+    text-align: center;
+}
+.keyexpired{
+    width: 5%;
+    text-align: center;
+}
+.emspace{
+    margin: 0.2em;
+    padding: 0.3em;
+    background-color: black;
+    opacity: 0.5;
+}
+.emspaceTitle{
+    margin: 0.2em;
+    padding: 0.3em;
+}
 .footerContents{
     display: flex;
     flex-direction: row;
@@ -288,8 +339,7 @@ a:hover{
 .login{
     display: flex;
     height: auto;
-    min-width: 250px;
-    width: 45%;
+    width: 95%;
     align-items: center;
     justify-content: center;
     flex-direction: column;

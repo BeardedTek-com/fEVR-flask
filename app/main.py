@@ -4,14 +4,13 @@ from sqlalchemy import desc
 import subprocess
 from datetime import datetime
 import os
-from IPy import IP
 
 from .models import events,frigate,cameras,User,apiAuth
 from . import db
 from .logit import logit
 from .fetch import Fetch
 from .auth import apiAuth
-from .rndpwd import randpwd
+
 main = Blueprint('main',__name__)
 
 # Main Routes
@@ -226,27 +225,4 @@ def apiCameras(camera):
     else:
         query = cameras.query.filter_by(camera=camera)
     return cameras.dict(query)
-
-@api.route('/api/auth/add/key/<name>/<ip>/<limit>')
-@login_required
-def apiAuthKeyAdd(name,ip,limit):
-    def validIP(ip):
-        try:
-            IP(ip)
-            return True
-        except:
-            return False
-    if current_user.group == "admin":
-        if validIP(ip):
-            db.create_all()
-            key = randpwd.generate(key=True)
-            auth = apiAuth(name=name,authIP=ip,key=key,limit=int(limit))
-            db.session.add(auth)
-            db.session.commit()
-            value = {"Authorized":True,"name":name,"ip":ip,"limit":limit,"key":key,"expired":False}
-        else:
-            value = {"Authorized":False,"Reason":"Invalid IP"}
-    else:
-        value = {"Authorized":False,"Reason":"Admin Only"}
-    return jsonify(value)
     
