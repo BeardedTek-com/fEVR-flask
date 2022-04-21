@@ -72,7 +72,7 @@ def apiAuthenticate():
     if 'key' in requestData:
         key = requestData['key']
         log.execute(f"  [ apiAuth Received API KEY ]: {key}",src=__name__)
-        entries = apiAuth.query.filter_by(key=key).first()
+        entries = apiAuth.query.all()
         if entries:
             for entry in entries:
                 if entry.key == key:
@@ -183,6 +183,61 @@ def logout():
 @auth.route('/profile')
 @login_required
 def profile():
+    page = "/profile"
     user = current_user
     keys = apiAuth.query.all()
-    return render_template('user.html',user=user,keys=keys)
+    return render_template('user.html',user=user,keys=keys,page=page)
+
+@auth.route('/profile',methods=['POST'])
+@login_required
+def profilePost():
+    page = "/profile"
+    user = current_user
+    keys = apiAuth.query.all()
+    form = {}
+    Password = 0
+    retypePassword = 0
+    missingFields =[]
+    for value in ['email','name','group','password','retypePassword']:
+        if request.form.get(value):
+            form[value] = request.form.get(value)
+        else:
+            if value == 'password':
+                Password = 1
+            elif value == 'retypePassword':
+                retypePassword = 1
+            else:
+                missingFields.append(value)
+        if missingFields:
+            flashmsg = "Required fields missing: "
+            for field in missingFields:
+                flashmsg += f"{field} "
+            flash(flashmsg)
+            return render_template('user.html',user=user,keys=keys,page=page)
+    query = User.query.filter_by(email=form['email']).first()
+    if query.email == form['email']:
+        query.name = form['name']
+        changePassword = Password + retypePassword
+        if changePassword == 0:
+            print(changePassword)
+            if form['password'] == form['retypePassword']:
+                password = generate_password_hash(form['password'], method='sha256')
+                if query.password != password:
+                    query.password = password
+                    flash('Password successfully changed.')
+                    return render_template('user.html',user=user,keys=keys,page=page)
+                else:
+                    flash('Please use a different password.')
+                    return render_template('user.html',user=user,keys=keys,page=page)
+            else:
+                flash('Passwords do not match.  Try again.')
+                return render_template('user.html',user=user,keys=keys,page=page)
+        elif changePassword == 1:
+            if Password == 1:
+                flash('You must type your password')
+                return render_template('user.html',user=user,keys=keys,page=page)
+            elif retypePassword == 1:
+                flash('You must retype your password')
+                return render_template('user.html',user=user,keys=keys,page=page)
+        db.session.commit()
+        return render_template('user.html',user=user,keys=keys,page=page)

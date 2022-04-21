@@ -27,19 +27,22 @@ from random import randint
 import socket
 import requests
 from math import floor
-import sys
+from .logit import logit
+import socket
 
-class logit:
-    def __init__(self,,debug=False):
-            self.debug = debug
-    def execute(self,msg,src='fEVR'):
-        def to_stderr(*a):
-            print(*a, file=sys.stderr)
-        self.logtime = "{:.4f}".format(time())
-        logentry = f"{self.logtime} {str(msg)}"
-        if self.debug:
-            to_stderr(f"[ {src:15}] {logentry}")
+class getLocalIP:
+    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    s.connect(("8.8.8.8", 80))
+    addr = s.getsockname()[0]
 
+class auth:
+    def api(transport,apikey,fevr,rSession):
+        # Construct the json for the post request
+        JsonPost = {'key':apikey,'ip':getLocalIP.addr}
+        # Sen the post using our session
+        authResponse = rSession.post(f"{transport}{fevr}/apiAuth", json=JsonPost)
+        logit.error.execute(authResponse.content,src=__name__)
+    
 class fevrMQTT:
     def __init__(self):
         self.script = 'mqtt_client'
@@ -123,12 +126,10 @@ class fevrMQTT:
                     uptimeStr = f"Uptime: {uptimeD} days, {uptimeH} hours, {uptimeM} minutes and {uptimeS} seconds."
                     self.error.execute(f"\t{uptimeStr}",src=self.script)
         elif 'event' in topic:
-            #First we must post our API Key
+            # Authenticate first
+            # Open a session so we can use the session cookie
             rSession = requests.Session()
-            JsonPost = {}
-            JsonPost['key'] = self.apikey
-            authResponse = rSession.post(f"{self.transport}{self.fevr}/apiAuth", json=JsonPost)
-            self.error.execute(authResponse.content,src=self.script)
+            auth.api(self.apikey,self.transport,self.fevr,rSession)
             event = loads(msg)
             type = event['type']
             after = event['after']

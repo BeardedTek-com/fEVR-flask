@@ -17,10 +17,11 @@
             <div class="notification">
                 
             </div>
-            <form method="POST" action="/setup/admin">
+            <form method="POST" action="/profile">
                 <div class="field">
                     <div class="noInput">
-                        {{user.email}}
+                        {{ user.email }}
+                        <input type="hidden" name="email" value="{{ user.email }}">
                     </div>
                 </div>
 
@@ -68,10 +69,9 @@
     </div>
     <div class="keylist">
         <div class="keystitle">Active Keys</div>
-            <div class="keyitem">
+            <div class="keyitem keylabels">
                 <div class="keyname emspaceTitle">Name</div>
                 <div class="keyIP emspaceTitle">IPv4 Addr</div>
-                <div class="keylabel emspaceTitle">Key</div>
                 <div class="keylimit emspaceTitle">Limit</div>
                 <div class="keyexpired emspaceTitle">Expire</div>
                 <div class="keydel emspaceTitle">Del</div>
@@ -80,7 +80,6 @@
             <div class="keyitem">
                 <div class="keyname emspace">{{ key.name }}</div>
                 <div class="keyIP emspace">{{ key.authIP }}</div>
-                <div class="key emspace">{{ key.key }}</div>
                 <div class="keylimit emspace">{{ key.limit }}</div>
                 {% if key.expired == None %}
                     {% set expired = False %}
@@ -89,6 +88,7 @@
                 {% endif %}
                 <div class="keyexpired emspace">{{ expired }}</div>
                 <div class="keydel emspace"><a href="/api/del/key/{{ key.id }}">Delete</a></div>
+                <div class="key emspace">{{ key.key }}</div>
             </div>
         {% endfor %}
     </div>

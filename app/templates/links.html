@@ -5,8 +5,8 @@
         {% else %}
                 <button onclick="window.location.href='/'">Latest</button>
         {% endif %}
-                <button onclick="window.location.href='/profile'">Profile</button>
                 <button onclick="window.location.href='/logout?page={{ page }}'">Logout</button>
+                <div class="profile" onclick="window.location.href='/profile'">{{current_user.name[0]|title}}</div>
             
         {% else %}
                 <button onclick="window.location.href='/login'">Login</button>

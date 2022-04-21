@@ -34,13 +34,11 @@ from .models import User
 @login_manager.user_loader
 def load_user(user_id):
     return User.query.get(int(user_id))
-
+from .api import api as api_blueprint
+app.register_blueprint(api_blueprint)
 
 from .main import main as main_blueprint
 app.register_blueprint(main_blueprint)
-
-from .main import api as api_blueprint
-app.register_blueprint(api_blueprint)
 
 from .auth import auth as auth_blueprint
 app.register_blueprint(auth_blueprint)

@@ -1,0 +1,20 @@
+{% extends "home.html" %}
+
+{% block content %}
+<div class="setupContainer">
+    <div class="setupProgress">
+        
+        <div class="setup-title">{{ label }} Setup</div>
+        {% for item in items['db'] %}
+        <div onclick="window.location.href='/setup/{{item}}'" class="setup-label setup-{{'current' if Item==item else items['db'][item]}}">
+            {{item}}
+        </div>
+        {% endfor %}
+        <div onclick="window.location.href='{{next}}'" class="setup-label setup-next">Next</div>
+    </div>
+    <div class="setup-content">
+        {% block setupContent %}
+        {% endblock %}
+    </div>
+</div>
+{% endblock %}

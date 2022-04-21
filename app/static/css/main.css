@@ -57,6 +57,27 @@ img{
     z-index: 100;
     
 }
+.profile{
+    font-size: 1.5em;
+    border-radius: 1em;
+    font-weight: bold;
+    border: none;
+    cursor: pointer;
+    margin: 0.25em 0.25em;
+    display: inline-block;
+    opacity: 0.8;
+    background-color: var(--buttonBackground);
+    color: var(--buttonText);
+    font-family: var(--mainFont);
+    padding: 0.25em 0.5em;
+    filter: drop-shadow(0.2em 0.2em 3px rgba(19, 19, 20,0.8));
+    cursor: pointer;
+}
+.profile:hover{
+    color: var(--buttonTextHover);
+    background-color: var(--buttonBackgroundHover);
+    filter: drop-shadow(0.3em 0.3em 2px rgba(19, 19, 20,1));
+}
 .back a{
     height: 1em;
     z-index: 10000;
@@ -195,39 +216,51 @@ img{
 }
 .keystitle{
     font-size: 2em;
-    padding-top: 1em;
-    padding-bottom: 1em;
+    padding-top: 1em;;
     text-align: center;
 }
 .keyitem{
     display: flex;
-    padding-top: 1em;
+    flex-wrap: wrap;
     padding-bottom: 1em;
+    justify-content: space-between
+}
+.keylabels{
+    padding-bottom: 0em;
 }
 .keyname{
-    width: 15%;
+    min-width: 25%;
+    max-width: 33%;
     text-align: center;
 }
 .keyIP{
-    width: 15%;
+    min-width: 25%;
+    max-width: 33%;
     text-align: center;
 }
 .key{
     word-break: break-all;
-    width: 60%
-}
-.keylabel{
-    width: 60%;
+    width: 100%
 }
 .keylist{
     padding-bottom: 2em;
 }
 .keylimit{
-    width: 5%;
+    width: 10%;
+    min-width: 40px;
+    max-width: 10%;
     text-align: center;
 }
 .keyexpired{
-    width: 5%;
+    width: 10%;
+    min-width: 40px;
+    max-width: 10%;
+    text-align: center;
+}
+.keydel{
+    width: 10%;
+    min-width: 40px;
+    max-width: 10%;
     text-align: center;
 }
 .emspace{
@@ -244,11 +277,11 @@ img{
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
-    justify-content: center;
+    justify-content: space-between;
     text-align: center;
     font-family:var(--mainFont);
     color: var(--primaryTextColor);
-    font-size: 1em;
+    font-size: 1.25em;
     min-height: 80%;
     width: 100%;
     max-width: 1025;
@@ -277,10 +310,15 @@ img{
     filter: drop-shadow(0.2em 0.35em 2px rgba(19, 19, 20,0.6));
 }
 .footerContent{
-    padding-left: 1em;
+    margin-top: 1em;
+    margin-bottom: 1em;
+    width: 50%;
 }
 .footerContent a{
     font-size: 1em;
+}
+.footercopyleft{
+    width: 100%;
 }
 a{
     color: var(--linkTextColor);
@@ -383,4 +421,74 @@ a:hover{
     border-radius: 0.5em;
     min-width: var(--navbarButtonMinWidth);
     filter: drop-shadow(0.1em 0.2em 3px rgba(19, 19, 20,0.6));
+}
+.setupContainer{
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: row;
+    justify-content: space-between;
+    width: 100%;
+    height: 4em;
+}
+.setupProgress{
+    display: flex;
+    justify-content: center;;
+    width: 100%;
+    padding: 0.5em;
+    color: rgb(240,255,255);
+    padding-left: 3em;
+}
+.setup-label{
+    padding: 0.5em 1em;
+    cursor:pointer;
+    font-weight: bolder;
+    font-size: 1.25em;
+    margin: 0.2em;
+}
+.setup-label:hover{
+    color: rgba(57 59 63,0.8);
+    background-color: rgba(240,255,255,0.6);
+}
+.setup-current{
+    background-color: rgb(240,255,255);
+    color: rgb(57 59 63);
+}
+.setup-current:hover{
+    color: rgba(57 59 63,0.8);
+    background-color: rgba(240,255,255, 0.6);
+}
+.setup-false{
+    background-color: rgba(156, 60, 60, 0.6);
+    color: rgb(240, 255, 255);
+}
+.setup-false:hover{
+    color: rgb(156, 60, 60);
+    background-color: rgb(240, 255, 255);
+}
+.setup-true{
+    background-color: rgba(79, 156, 60, 0.6);
+    color: rgb(240,255,255);
+}
+.setup-true:hover{
+    color: rgb(79, 156, 60);
+    background-color: rgb(240,255,255);
+}
+.setup-title{
+    width: 100%;
+    padding: 0.5em;
+    cursor: pointer;
+    font-weight: bolder;
+    font-size: 1.25em;
+    margin: 0.2em;
+    padding-right: 3em;
+    text-align: right;
+}
+.setup-content{
+    display: flex;
+    padding-top: 2em;
+    width: 100%;
+    justify-content: center;
+}
+.adminExists{
+    text-align: center;
 }

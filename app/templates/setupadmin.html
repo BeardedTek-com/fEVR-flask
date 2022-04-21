@@ -1,9 +1,16 @@
-{% extends "home.html" %}
+{% extends "setup.html" %}
 <div class="signup">
-    {% block content %}
+    {% block setupContent %}
             
-    <div class="login">
+    <div class="login adminExists">
         <h3 class="title">Admin Setup</h3>
+        {% if admin %}
+        Admin user already exists:<br/>
+        <br/>
+        Please contact {{admin[0]}} to be added as an admin.<br/>
+        <br/>
+        {{admin[1]}}
+        {% else %}
         Create the initial admin user.<br/>
         <br/>
         <div class="box">
@@ -45,6 +52,7 @@
                 <button>Sign Up</button>
             </form>
         </div>
+        {% endif%}
     </div>
-    {% endblock %}
 </div>
+{% endblock %}
