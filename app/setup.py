@@ -6,7 +6,9 @@ import sqlalchemy
 from . import db
 from .rndpwd import randpwd
 setup = Blueprint('setup', __name__)
-
+@setup.route('/setup')
+def setupFwd():
+    return redirect("/setup/start")
 @setup.route('/setup/<Item>')
 @login_required
 def setupfEVR(Item):
