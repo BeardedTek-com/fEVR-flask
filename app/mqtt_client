@@ -136,7 +136,9 @@ class fevrMQTT:
                     self.error.execute(f"\t{uptimeStr}",src=self.script)
         elif 'event' in topic:
             #First we must post our API Key
-            self.error.execute(requests.post(f"{self.transport}{self.fevr}/apiAuth", json=self.apikey),src=self.script)
+            JsonPost = {"key":self.apikey}
+            authResponse = requests.post(f"{self.transport}{self.fevr}/apiAuth", json=JsonPost)
+            self.error.execute(authResponse.content,src=self.script)
             event = loads(msg)
             type = event['type']
             after = event['after']
@@ -145,7 +147,8 @@ class fevrMQTT:
                 score = floor(float(after['score'])*100)
                 camera = after['camera']
                 eventid = after['id']
-                self.error.execute(requests.get(f"{self.transport}{self.fevr}/api/events/add/{eventid}/{camera}/{type}/{score}"),src=self.script)
+                addEventResponse = requests.get(f"{self.transport}{self.fevr}/api/events/add/{eventid}/{camera}/{type}/{score}")
+                self.error.execute(addEventResponse.content,src=self.script)
 
     def subscribe(self, client: mqtt_client):
         def on_message(client, userdata, msg):

@@ -4,48 +4,54 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import login_user, logout_user, login_required
 from .models import User, apiAuth
 from . import db
-
-    
+from .logit import logit
+log=logit()  
 
 auth = Blueprint('auth', __name__)
 
 @auth.route('/apiAuth',methods=['POST'])
 def apiAuthenticate():
     ip = request.remote_addr
-    auth = {"auth": False,"user":None,"ip":ip}
+    auth = {"auth":False,"name":None,"authIP":ip,"changed":False,"remember":False}
     requestData = request.get_json()
+    log.execute(f"apiAuth Post Data:{requestData}")
     key = None
     if 'key' in requestData:
         key = requestData['key']
-        entry = apiAuth.query.filter_by(key=key).first()
-        if entry:
-            auth = {"auth":False,"name":None,"authIP":None,"changed":False,"remember":False}
-            # Check if all of the following match:
-            #   - ip address
-            #   - key
-            #   - key expiry
-            if entry.key==key and not entry.expired:
-                auth['auth'] = True
-                auth['name'] = entry.name
-                auth['authIP'] = ip
-                
-                login_user(entry,remember=False)
-                
-                # Check the key limits
-                # Keys can be use limited.
-                # A user that has just a limited key can only log into the site X number of times before key expires
-                if entry.limit != 0:
-                    if entry.limit > 1:
-                        entry.limit -= 1
-                        auth['changed'] = True
-                    # If this is the key's last use, make sure to expire it.
-                    elif entry.limit == 1:
-                        entry.limit = 0
-                        entry.expired = True
-                        auth['changed'] = True
-                # If we changed they key limit or set it to expired, commit it to the database.
-                if auth['changed']:
-                    db.session.commit()
+        log.execute(f"  [ apiAuth Received API KEY ]: {key}",src=__name__)
+        entries = apiAuth.query.all()
+        if entries:
+            for entry in entries:
+                if entry.key == key:
+                    # Check if all of the following match:
+                    #   - ip address
+                    #   - key
+                    #   - key expiry
+                    log.execute(f"  [ apiAuth Expected Key ]: {entry.key}")
+                    log.execute(f"  [ apiAuth Received Key ]: {key}")
+                    if entry.key==key and not entry.expired:
+                        auth['auth'] = True
+                        auth['name'] = entry.name
+                        auth['authIP'] = ip
+                        log.execute(f"  [ auth ]: {auth}",__name__)
+                        login_user(entry,remember=True)
+                        log.execute(f"  [ apiAuth AUTHORIZED ]: {auth}",src=__name__)
+                        # Check the key limits
+                        # Keys can be use limited.
+                        # A user that has just a limited key can only log into the site X number of times before key expires
+                        if entry.limit != 0:
+                            if entry.limit > 1:
+                                entry.limit -= 1
+                                auth['changed'] = True
+                            # If this is the key's last use, make sure to expire it.
+                            elif entry.limit == 1:
+                                entry.limit = 0
+                                entry.expired = True
+                                auth['changed'] = True
+                        # If we changed they key limit or set it to expired, commit it to the database.
+                        if auth['changed']:
+                            db.session.commit()
+    log.execute(f"  [ apiAuth Returned Value ]: {auth}",src=__name__)
     return jsonify(auth)
 
 @auth.route('/login',methods=['GET'])
