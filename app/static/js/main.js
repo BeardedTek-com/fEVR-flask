@@ -36,3 +36,13 @@ function shareButton(id,btn,el){
         closeBtn.classList.add('invisible')
     }
 }
+function menu(){
+    Menu = document.getElementById('menu');
+    if (Menu.classList.contains('menuHide')){
+        Menu.classList.remove('menuHide')
+        
+    }
+    else{
+        Menu.classList.add('menuHide')
+    }
+}

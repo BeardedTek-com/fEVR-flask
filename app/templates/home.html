@@ -15,15 +15,6 @@
         <link rel="stylesheet" href="/static/css/colors.css"/>
         <link rel="stylesheet" href="/static/css/setup.css"/>
         <title>fEVR by BeardedTek</title>
-        <!-- Global site tag (gtag.js) - Google Analytics -->
-        <script async src="https://www.googletagmanager.com/gtag/js?id=G-N9EPFZW1J5"></script>
-        <script>
-            window.dataLayer = window.dataLayer || [];
-            function gtag(){dataLayer.push(arguments);}
-            gtag('js', new Date());
-            gtag('config', 'G-N9EPFZW1J5');
-        </script>
-        <script src='/static/js/modal.js'></script>
         <script src='/static/js/main.js'></script>
     </head>
     <body class="bg-dark">
@@ -31,11 +22,37 @@
             <div class="logo">
                 <a href="/"><img src="/static/img/fevr.svg"></a>
             </div>
-            <div class="links">
+            <div class="links noSelect">
                 {% import "links.html" as links %}
                 {{ links.navbar(current_user,page) }}
             </div>
         </div>
+        {% if current_user.is_authenticated %}
+        <div class="menu menuHide" id="menu">
+            <div class="menu-left">
+                <div class="menu-events">
+                    <br/>
+                    <a href="/latest">Latest Events</a><br/>
+                    <a href="/all">All Events</a><br/>
+                    <a onclick="filters()">Filters</a><br/>
+                </div>
+            </div>
+            <div class="menu-right">
+                <div class="menu-system">
+                    <a target="_blank" href="https://docs.fevr.video">Documentation</a><br/>
+                    <a target="_blank" href="https://github.com/beardedtek-com/fEVR/discussions">Discussions</a><br/>
+                    <a target="_blank" href="https://fevr.video">Official Site</a><br/>
+                    <a target="_blank" href="https://github.com/beardedtek-com/fEVR/">GitHub</a>
+                </div>
+                <div class="menu-user">
+                    <a href="/profile">Edit Profile</a><br/>
+                    <a href="/logout?page={{page}}">Logout</a><br/>
+                    <a href="/routes">Sitemap</a><br>
+                    <a href="/setup">Settings</a>
+                </div>
+            </div>
+        </div>
+        {% endif %}
         <div class="content">
             <div class="description">
                 <div class="tagline">
@@ -45,7 +62,6 @@
                     {% block content %}
                     {% endblock %}
                 </div>
-                    <div class="beard"></div>
                 </div>
                 <div class="footerContents">
                     <div class="footerContent"><a href='https://github.com/beardedtek-com/fEVR/discussions' target='_blank'>Get Support</a></div>

@@ -16,6 +16,11 @@ def index():
     events = api.apiShowLatest()
     return render_template('events.html',page=page,title=title,events=events)
 
+@main.route('/latest')
+@login_required
+def latest():
+    return redirect("/")
+
 @main.route('/all')
 @login_required
 def viewAll():

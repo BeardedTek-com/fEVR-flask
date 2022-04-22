@@ -3,16 +3,20 @@ from flask_login import login_required
 from werkzeug.security import generate_password_hash
 from .models import User,frigate,cameras,events,apiAuth,config
 import sqlalchemy
+from .helpers.drawSVG import drawSVG
 from . import db
 from .rndpwd import randpwd
 setup = Blueprint('setup', __name__)
+
+
 @setup.route('/setup')
 def setupFwd():
     return redirect("/setup/start")
+
 @setup.route('/setup/<Item>')
 @login_required
 def setupfEVR(Item):
-    status = {'db':{'frigate':False,'cameras':False,'User':False,'apiAuth':False,'config':False}}
+    status = {'db':{'cameras':False,'frigate':False,'User':False,'apiAuth':False,'config':False}}
     tables = {
         'frigate':frigate,
         'cameras':cameras,
@@ -30,10 +34,10 @@ def setupfEVR(Item):
         return status
     else:
         page=f"/setup/{Item}"
-        label = Item.title()
+        label = f"{Item.title()} Setup"
         if Item == 'start' or Item == 'fevr' or Item == 'admin':
             next='frigate'
-            label = 'fEVR'
+            label = 'fEVR Setup'
             admin = User.query.filter_by(group='admin').first()
             if admin:
                 adname = admin.name
@@ -47,7 +51,7 @@ def setupfEVR(Item):
         elif Item == 'User':
             next="/setup/apiAuth"
         elif Item == 'apiAuth':
-            label = 'apiAuth'
+            label = 'apiAuth Setup'
             next = '/setup/config'
         elif Item == 'config':
             next = '/'

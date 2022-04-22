@@ -4,15 +4,15 @@ html{
     --descriptionMaxWidth: 62.5em;
     --navbarButtonMinWidth: 7em;
     /* Color */
-    --pageBackgroundColor: rgb(49, 55, 66);
-    --contentBackgroundColor: rgb(57 59 63);
+    --pageBackgroundColor: rgb(57 59 63);
+    --contentBackgroundColor: rgb(24, 25, 26);
     --navbarBackgroundColor: rgb(49, 55, 66);
     --primaryTextColor: rgb(240,255,255);
     --accentTextColor: rgb(113,120,132);
     --linkLightBGColor: rgb(49, 55, 66);
     --linkTextColor: rgba(240,255,255,0.6);
     --linkTextColorHover: (240,255,255,0.6);
-    --buttonBackgroundHover: rgba(240,255,255,0.6);
+    --buttonBackgroundHover: rgba(28,62,211,1);
     --buttonTextHover: rgba(57 59 63,0.8);
     --buttonBackground: rgb(240,255,255);
     --buttonText: rgb(57 59 63);
@@ -46,15 +46,20 @@ img{
 .navbar{
     position: sticky;
     top: 0;
-    height: 4em;
+    height: 3em;
     display: flex;
     flex-wrap: wrap;
     justify-content: space-between;
-    padding-left: 2em;
-    padding-right: 2em;
+    padding-left: 1em;
+    padding-right: 0.5em;
     padding-bottom: 1em;
     filter: drop-shadow(0 0 0.5em rgba(19, 19, 20,0.6));
     z-index: 100;
+    background: rgb(3,17,42);
+    background: -moz-linear-gradient(243deg, rgba(3,17,42,1) 12%, rgba(45,10,45,0.6) 64%, rgba(3,11,51,1) 90%);
+    background: -webkit-linear-gradient(243deg, rgba(3,17,42,1) 12%, rgba(45,10,45,0.6) 64%, rgba(3,11,51,1) 90%);
+    background: linear-gradient(243deg, rgba(3,17,42,1) 12%, rgba(45,10,45,0.6) 64%, rgba(3,11,51,1) 90%);
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr="#03112a",endColorstr="#030b33",GradientType=1);
     
 }
 .profile{
@@ -65,24 +70,25 @@ img{
     cursor: pointer;
     margin: 0.25em 0.25em;
     display: inline-block;
-    opacity: 0.8;
     background-color: var(--buttonBackground);
     color: var(--buttonText);
     font-family: var(--mainFont);
     padding: 0.25em 0.5em;
-    filter: drop-shadow(0.2em 0.2em 3px rgba(19, 19, 20,0.8));
+    filter: drop-shadow(0.25em 0.5em 0.2em rgba(0, 0, 0,1));
     cursor: pointer;
 }
 .profile:hover{
     color: var(--buttonTextHover);
     background-color: var(--buttonBackgroundHover);
-    filter: drop-shadow(0.3em 0.3em 2px rgba(19, 19, 20,1));
+    filter: drop-shadow(0.3em 0.6em 0.15em rgba(0, 0, 0,1));
 }
 .back a{
     height: 1em;
     z-index: 10000;
 }
 .logo {
+    position: relative;
+    top: 0.25em;
     height: 4em;
     padding-top: 0.25em;
     padding-bottom: 0;
@@ -91,7 +97,16 @@ img{
 .logo img{
     height: 100%;
     width: 100%;
-    filter: drop-shadow(0.25em 0.5em 0.2em rgba(19, 19, 20,0.6));
+    filter: drop-shadow(0.25em 0.5em 0.2em rgba(0, 0, 0,1));
+}
+.logo img:hover{
+    filter: drop-shadow(0.3em 0.6em 0.15em rgba(0, 0, 0,1));
+}
+.logo a{
+    filter: unset;
+}
+.logo a:hover{
+    filter: unset;
 }
 .links{
     height: 1.5em;
@@ -109,19 +124,18 @@ img{
     margin: 0.25em 0.25em;
     display: inline-block;
     background-color: var(--buttonBackground);
-    opacity: 0.8;
     color: var(--buttonText);
     font-family:var(--mainFont);
     font-size: 0.9em;
     padding: 0.25em 0.5em;
     border-radius: 0.5em;
     min-width: var(--navbarButtonMinWidth);
-    filter: drop-shadow(0.1em 0.2em 3px rgba(19, 19, 20,0.6));
+    filter: drop-shadow(0.25em 0.5em 0.2em rgba(0, 0, 0,1));
 }
 .links button:hover{
-    color: var(--buttonTextHover);
+    color: rgb(240,255,255,1);
     background-color: var(--buttonBackgroundHover);
-    filter: drop-shadow(0.2em 0.35em 2px rgba(19, 19, 20,0.6));
+    filter: drop-shadow(0.3em 0.6em 0.15em rgba(0, 0, 0,1));
 }
 .copyleft{
     display: inline-block;
@@ -141,7 +155,7 @@ img{
 .share img{
     height: 90%;
     margin: 0.25em;
-    filter: drop-shadow(0.05em 0.1em 3px rgba(19, 19, 20,0.6));
+    filter: drop-shadow(0.25em 0.5em 0.2em rgba(0, 0, 0,1));
     cursor: pointer;
 }
 #shareBtn{
@@ -163,7 +177,7 @@ img{
     opacity: 0;
 }
 .share img:hover{
-    filter: drop-shadow(0.2em 0.35em 2px rgba(19, 19, 20,0.6));
+    filter: drop-shadow(0.3em 0.6em 0.15em rgba(0, 0, 0,1));
 }
 .socialIcons{
     opacity: 0;
@@ -195,7 +209,7 @@ img{
     background-color: rgb(57 59 63);
     padding-left: 1em;
     padding-right: 1em;
-    filter: drop-shadow(0 0 1em rgba(19, 19, 20,0.6));
+    filter: drop-shadow(0 0 0.5em rgba(19, 19, 20,0.6));
 }
 .doc{
     min-height: 72vh;
@@ -282,12 +296,12 @@ img{
     font-family:var(--mainFont);
     color: var(--primaryTextColor);
     font-size: 1.25em;
-    min-height: 80%;
     width: 100%;
     max-width: 1025;
     padding-left: 0.25em;
     padding-right: 0.25em;
-    filter: drop-shadow(0 0 1em rgba(19, 19, 20,0.6));
+    filter: drop-shadow(0 0 0.5em rgba(19, 19, 20,0.6));
+    margin-bottom: 1em;
 }
 .footerContents button{
     border: none;
@@ -302,20 +316,22 @@ img{
     padding: 0.25em 0.5em;
     border-radius: 0.5em;
     min-width: var(--navbarButtonMinWidth);
-    filter: drop-shadow(0.1em 0.2em 3px rgba(19, 19, 20,0.6));
+    filter: drop-shadow(0.25em 0.5em 0.2em rgba(0, 0, 0,1));
 }
 .footerContents button:hover{
     color: var(--buttonTextHover);
     background-color: var(--buttonBackgroundHover);
-    filter: drop-shadow(0.2em 0.35em 2px rgba(19, 19, 20,0.6));
+    filter: drop-shadow(0.3em 0.6em 0.15em rgba(0, 0, 0,1));
 }
 .footerContent{
     margin-top: 1em;
-    margin-bottom: 1em;
     width: 50%;
 }
 .footerContent a{
     font-size: 1em;
+}
+.footerContent a:hover{
+    color:rgba(255,255,255,1);
 }
 .footercopyleft{
     width: 100%;
@@ -323,11 +339,11 @@ img{
 a{
     color: var(--linkTextColor);
     text-decoration: none;
-    filter: drop-shadow(0.05em 0.1em 3px rgba(19, 19, 20,0.6));
+    filter: drop-shadow(0.25em 0.5em 0.2em rgba(0, 0, 0,1));
 }
 a:hover{
-    color:var(--linkTextColorHover);
-    filter: drop-shadow(0.1em 0.2em 3px rgba(19, 19, 20,0.6));
+    color:rgba(28,62,211,1);;
+    filter: drop-shadow(0.3em 0.6em 0.15em rgba(0, 0, 0,1));
 }
 .card{
     width: 50%;
@@ -420,7 +436,7 @@ a:hover{
     padding: 0.25em 0.5em;
     border-radius: 0.5em;
     min-width: var(--navbarButtonMinWidth);
-    filter: drop-shadow(0.1em 0.2em 3px rgba(19, 19, 20,0.6));
+    filter: drop-shadow(0.25em 0.5em 0.2em rgba(0, 0, 0,1));
 }
 .setupContainer{
     display: flex;
@@ -439,15 +455,19 @@ a:hover{
     padding-left: 3em;
 }
 .setup-label{
-    padding: 0.5em 1em;
+    padding: 0.5em 0.5em;
     cursor:pointer;
     font-weight: bolder;
-    font-size: 1.25em;
+    font-size: 1.1em;
     margin: 0.2em;
+    filter: drop-shadow(0.25em 0.5em 0.2em rgba(0, 0, 0,1));
+    background-color: rgba(240,255,255,0.9);
+    color: rgba(57, 59, 63,1);
 }
 .setup-label:hover{
     color: rgba(57 59 63,0.8);
     background-color: rgba(240,255,255,0.6);
+    filter: drop-shadow(0.3em 0.6em 0.15em rgba(0, 0, 0,1));
 }
 .setup-current{
     background-color: rgb(240,255,255);
@@ -489,6 +509,63 @@ a:hover{
     width: 100%;
     justify-content: center;
 }
+
+.div-link:hover{
+    color:rgba(240, 255, 255,1);
+    background-color: rgba(28,62,211,1);
+    filter: drop-shadow(0.3em 0.6em 0.15em rgba(0, 0, 0,1));
+}
 .adminExists{
     text-align: center;
+}
+.noSelect{
+    -webkit-user-select: none; /* Safari */        
+    -moz-user-select: none; /* Firefox */
+    -ms-user-select: none; /* IE10+/Edge */
+    user-select: none; /* Standard */
+}
+.menu{
+    position: sticky;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    flex-wrap: nowrap;
+    overflow: hidden;
+    top: 2.5em;
+    padding: 0.5em;
+    filter: drop-shadow(0.25em 0.5em 0.2em rgba(0, 0, 0,1));
+    background-color: rgba(240,255,255,0.9);
+    text-align: right;
+    font-size: 1.5em;
+    font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    filter: unset;
+    height: 4em;
+    z-index: 98;
+    transition: height 1s ease, padding 1s ease;
+}
+.menu a{
+    color: rgb(57, 59, 63);
+    filter: unset;
+}
+.menu a:hover{
+    color: rgb(28, 62, 211);
+    filter: unset;
+}
+.menu-right{
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+    flex-wrap: nowrap;
+}
+.menu-system{
+    padding-right: 2em;
+    text-align: left;
+}
+.menu-events{
+    text-align: left;
+}
+.menuHide{  
+    padding:0;
+    height: 0em;
+    overflow: hidden;
 }

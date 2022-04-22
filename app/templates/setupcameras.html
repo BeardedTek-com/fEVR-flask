@@ -1,6 +1,5 @@
-{% extends "home.html" %}
-<div class="signup">
-    {% block content %}
+{% extends "setup.html" %}
+    {% block setupContent %}
             
     <div class="login">
         <h3 class="title">{{ user.name }}</h3>
@@ -37,8 +36,6 @@
                         <input class="input is-large" type="text" name="group" value="{{user.group}}" autofocus="">
                     </div>
                 </div>
-                {% else %}
-                        <input type="hidden" name="group" value="{{user.group}}"/>
                 {% endif %}
 
                 <div class="field">
@@ -96,4 +93,3 @@
     </div>
     {% endif %}
     {% endblock %}
-</div>
