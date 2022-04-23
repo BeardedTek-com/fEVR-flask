@@ -3,7 +3,7 @@ from flask_login import login_required
 import sqlalchemy
 from .models import frigate, cameras, events, User, apiAuth, config
 from . import api
-
+from .helpers.menu import menuState
 main = Blueprint('main',__name__)
 
 
@@ -11,10 +11,11 @@ main = Blueprint('main',__name__)
 @main.route('/')
 @login_required
 def index():
+    menu = menuState.get()
     page = '/'
     title = 'Latest Events'
     events = api.apiShowLatest()
-    return render_template('events.html',page=page,title=title,events=events)
+    return render_template('events.html',menu=menu,page=page,title=title,events=events)
 
 @main.route('/latest')
 @login_required
@@ -24,14 +25,16 @@ def latest():
 @main.route('/all')
 @login_required
 def viewAll():
+    menu = menuState.get()
     page = '/all'
     title = 'All Events'
     events = api.apiShowAllEvents()
-    return render_template('events.html',page=page,title=title,events=events)
+    return render_template('events.html',menu=menu,page=page,title=title,events=events)
 
 @main.route('/event/<eventid>/<view>')
 @login_required
 def viewSingle(eventid,view):
+    menu = menuState.get()
     page = f"/event/{eventid}/{view}"
     Frigate = api.apiFrigate()
     frigateURL = Frigate['external']
@@ -62,7 +65,7 @@ def viewSingle(eventid,view):
                 title += f"<div class='view20'>{view.title()}</div>"
         else:
             title += "<div class='view20'> </div>"
-        return render_template('event.html',page=page,title=title,event=event,view=view,frigateURL=frigateURL)
+        return render_template('event.html',menu=menu,page=page,title=title,event=event,view=view,frigateURL=frigateURL)
     else:
         return redirect(url_for('main.index'))
     

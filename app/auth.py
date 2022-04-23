@@ -8,7 +8,7 @@ from .models import User, apiAuth
 from . import db
 from .logit import logit
 from .rndpwd import randpwd
-
+from .helpers.menu import menuState
 log=logit()  
 
 auth = Blueprint('auth', __name__)
@@ -109,6 +109,7 @@ def apiAuthenticate():
 
 @auth.route('/login',methods=['GET'])
 def login():
+    menu=menuState.get()
     fwd = "/"
     fwdName = "access fEVR"
     fwd = request.args.get('next')
@@ -118,7 +119,7 @@ def login():
         for val in values:
             if fwd == val:
                 fwdName = values[val]
-    return render_template('login.html',fwd=fwd,fwdName=fwdName)
+    return render_template('login.html',menu=menu,fwd=fwd,fwdName=fwdName)
     
 @auth.route('/login', methods=['POST'])
 def loginProcessForm():
@@ -142,11 +143,13 @@ def loginProcessForm():
 
 @auth.route('/signup')
 def signup():
+    menu = menuState.get()
+    page = "/"
     db.create_all()
     if User.query.first() == None:
         return render_template('setupadmin.html',type='admin')
     else:
-        return render_template('signup.html')
+        return render_template('signup.html',menu=menu,page=page)
 
 @auth.route('/signup', methods=['POST'])
 def signupProcessForm():
@@ -183,10 +186,11 @@ def logout():
 @auth.route('/profile')
 @login_required
 def profile():
+    menu = menuState.get()
     page = "/profile"
     user = current_user
     keys = apiAuth.query.all()
-    return render_template('user.html',user=user,keys=keys,page=page)
+    return render_template('user.html',menu=menu,user=user,keys=keys,page=page)
 
 @auth.route('/profile',methods=['POST'])
 @login_required

@@ -3,8 +3,8 @@ from flask import Flask, session
 from flask_sqlalchemy import SQLAlchemy
 import json
 from flask_login import LoginManager
-
 from datetime import timedelta
+
 
 # Flask app Setup
 app = Flask(__name__)
@@ -45,3 +45,4 @@ app.register_blueprint(auth_blueprint)
 
 from .setup import setup as setup_blueprint
 app.register_blueprint(setup_blueprint)
+

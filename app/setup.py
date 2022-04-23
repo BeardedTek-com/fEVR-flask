@@ -6,6 +6,7 @@ import sqlalchemy
 from .helpers.drawSVG import drawSVG
 from . import db
 from .rndpwd import randpwd
+from .helpers.menu import menuState
 setup = Blueprint('setup', __name__)
 
 
@@ -16,6 +17,7 @@ def setupFwd():
 @setup.route('/setup/<Item>')
 @login_required
 def setupfEVR(Item):
+    menu=menuState.get()
     status = {'db':{'cameras':False,'frigate':False,'User':False,'apiAuth':False,'config':False}}
     tables = {
         'frigate':frigate,
@@ -43,7 +45,7 @@ def setupfEVR(Item):
                 adname = admin.name
                 admail = admin.email
                 admin = [adname,admail]
-            return render_template('setupadmin.html',next=next,admin=admin,label=label,page=page,items=status,Item=Item)
+            return render_template('setupadmin.html',menu=menu,next=next,admin=admin,label=label,page=page,items=status,Item=Item)
         elif Item == 'frigate':
             next="/setup/cameras"
         elif Item == 'cameras':
@@ -57,7 +59,7 @@ def setupfEVR(Item):
             next = '/'
         else:
             next = "/"
-        return render_template('setup.html',next=next,label=label,page=page,items=status,Item=Item)
+        return render_template('setup.html',menu=menu,next=next,label=label,page=page,items=status,Item=Item)
 
 
 @setup.route('/setup/admin')

@@ -12,10 +12,10 @@ html{
     --linkLightBGColor: rgb(49, 55, 66);
     --linkTextColor: rgba(240,255,255,0.6);
     --linkTextColorHover: (240,255,255,0.6);
-    --buttonBackgroundHover: rgba(28,62,211,1);
-    --buttonTextHover: rgba(57 59 63,0.8);
-    --buttonBackground: rgb(240,255,255);
-    --buttonText: rgb(57 59 63);
+    --buttonBackgroundHover: rgba(240,255,255,1);
+    --buttonTextHover:  rgba(28,62,211,1);
+    --buttonBackground: rgba(28,62,211,1);
+    --buttonText: rgb(240,255,255);
     --codeBackground: rgba(240,255,255,0.1);
     /* Drop Shadows */
     --dropShadow: drop-shadow(0 0 0.5em rgba(19, 19, 20,0.6));
@@ -53,35 +53,38 @@ img{
     padding-left: 1em;
     padding-right: 0.5em;
     padding-bottom: 1em;
-    filter: drop-shadow(0 0 0.5em rgba(19, 19, 20,0.6));
     z-index: 100;
     background: rgb(3,17,42);
     background: -moz-linear-gradient(243deg, rgba(3,17,42,1) 12%, rgba(45,10,45,0.6) 64%, rgba(3,11,51,1) 90%);
     background: -webkit-linear-gradient(243deg, rgba(3,17,42,1) 12%, rgba(45,10,45,0.6) 64%, rgba(3,11,51,1) 90%);
     background: linear-gradient(243deg, rgba(3,17,42,1) 12%, rgba(45,10,45,0.6) 64%, rgba(3,11,51,1) 90%);
     filter: progid:DXImageTransform.Microsoft.gradient(startColorstr="#03112a",endColorstr="#030b33",GradientType=1);
+    filter: drop-shadow(0 0 0.5em rgba(19, 19, 20,0.6));
     
 }
 .profile{
-    font-size: 1.5em;
+    position: relative;
+    top: 0.35em;
+    background: center url('/static/img/beard.svg');
+    font-size: 2.5em;
+    width: 1.2em;
+    height: 1.2em;
     border-radius: 1em;
     font-weight: bold;
     border: none;
     cursor: pointer;
     margin: 0.25em 0.25em;
-    display: inline-block;
-    background-color: var(--buttonBackground);
-    color: var(--buttonText);
-    font-family: var(--mainFont);
-    padding: 0.25em 0.5em;
-    filter: drop-shadow(0.25em 0.5em 0.2em rgba(0, 0, 0,1));
+    filter:drop-shadow(0.1em 0.25em 0.2em rgba(0, 0, 0,1));
     cursor: pointer;
 }
 .profile:hover{
-    color: var(--buttonTextHover);
-    background-color: var(--buttonBackgroundHover);
-    filter: drop-shadow(0.3em 0.6em 0.15em rgba(0, 0, 0,1));
+    background: center url('/static/img/beard-hover.svg');
+    filter: drop-shadow(0.15em 0.4em 0.2em rgba(0, 0, 0,1));
 }
+.profile a:hover{
+    filter: unset;
+}
+
 .back a{
     height: 1em;
     z-index: 10000;
@@ -203,7 +206,7 @@ img{
 }
 .description{
     width: 95%;
-    min-height: 80%;
+    min-height: 70vh;
     padding-bottom: 0.5em;
     max-width: var(--descriptionMaxWidth);
     background-color: rgb(57 59 63);
@@ -212,7 +215,7 @@ img{
     filter: drop-shadow(0 0 0.5em rgba(19, 19, 20,0.6));
 }
 .doc{
-    min-height: 72vh;
+    min-height: 65vh;
 }
 .content{
     display: flex;
@@ -327,12 +330,7 @@ img{
     margin-top: 1em;
     width: 50%;
 }
-.footerContent a{
-    font-size: 1em;
-}
-.footerContent a:hover{
-    color:rgba(255,255,255,1);
-}
+
 .footercopyleft{
     width: 100%;
 }
@@ -342,8 +340,8 @@ a{
     filter: drop-shadow(0.25em 0.5em 0.2em rgba(0, 0, 0,1));
 }
 a:hover{
-    color:rgba(28,62,211,1);;
-    filter: drop-shadow(0.3em 0.6em 0.15em rgba(0, 0, 0,1));
+    color:rgba(28,62,211,1);
+    filter: drop-shadow(0em 0em 0.2em rgba(0, 0, 0,1));
 }
 .card{
     width: 50%;
@@ -509,11 +507,16 @@ a:hover{
     width: 100%;
     justify-content: center;
 }
-
-.div-link:hover{
+.div-link{
     color:rgba(240, 255, 255,1);
     background-color: rgba(28,62,211,1);
-    filter: drop-shadow(0.3em 0.6em 0.15em rgba(0, 0, 0,1));
+    display: flex;
+    align-content: center;
+    justify-content: center;
+}
+.div-link:hover{
+    color: rgba(28,62,211,1);
+    background-color: rgba(240, 255, 255,1);
 }
 .adminExists{
     text-align: center;
@@ -531,9 +534,8 @@ a:hover{
     justify-content: space-between;
     flex-wrap: nowrap;
     overflow: hidden;
-    top: 2.5em;
+    top: 2.65em;
     padding: 0.5em;
-    filter: drop-shadow(0.25em 0.5em 0.2em rgba(0, 0, 0,1));
     background-color: rgba(240,255,255,0.9);
     text-align: right;
     font-size: 1.5em;
@@ -542,6 +544,7 @@ a:hover{
     height: 4em;
     z-index: 98;
     transition: height 1s ease, padding 1s ease;
+    filter: drop-shadow(0 0 0.5em rgba(19, 19, 20,0.6));
 }
 .menu a{
     color: rgb(57, 59, 63);

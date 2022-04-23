@@ -28,7 +28,7 @@
             </div>
         </div>
         {% if current_user.is_authenticated %}
-        <div class="menu menuHide" id="menu">
+        <div class="menu {{'menuHide' if menu=="closed"}}" id="menu">
             <div class="menu-left">
                 <div class="menu-events">
                     <br/>
@@ -68,7 +68,7 @@
                     <div class="footerContent"><a href='https://github.com/beardedtek-com/fevr'>GitHub</a></div>
                     <div class="footerContent"><a href='https://fevr.video' target='_blank'>fEVR.video</a></div>
                     <div class="footerContent"><a href="https://docs.fevr.video" target='_blank'>docs.fEVR.video</a></div>
-                    <div class="footerContent footercopyleft"><span class='copyleft'>&copy;</span>2022 <a target='_blank' href='https://beardedtek.com'>BeardedTek.com</a></div>
+                    <div class="footerContent footercopyleft"><a target='_blank' href='https://beardedtek.com'><span class='copyleft'>&copy;</span>2022 BeardedTek.com</a></div>
                 </div>
             </div>
             

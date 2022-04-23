@@ -1,6 +1,8 @@
 {% macro navbar(current_user,page) -%}
         {% if current_user.is_authenticated %}
-                <div class="profile div-link" onclick="menu();">{{current_user.name[0]|title}}</div>
+                <div class="profile div-link" onclick="menu();">
+                        <!-- <img src="/static/img/beardmenu.png"> -->
+                </div>
             
         {% else %}
                 <button class="div-link" onclick="window.location.href='/login'">Login</button>

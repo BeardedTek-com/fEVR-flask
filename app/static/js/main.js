@@ -40,9 +40,11 @@ function menu(){
     Menu = document.getElementById('menu');
     if (Menu.classList.contains('menuHide')){
         Menu.classList.remove('menuHide')
+        document.cookie = "menu=open";
         
     }
     else{
         Menu.classList.add('menuHide')
+        document.cookie = "menu=closed";
     }
 }
