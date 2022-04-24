@@ -1,4 +1,4 @@
-from  . import db
+from  .. import db
 from flask_sqlalchemy import inspect
 from flask_login import UserMixin
 from datetime import datetime

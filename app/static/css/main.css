@@ -23,6 +23,7 @@ html{
     --dropShadowLinkHover: drop-shadow(0.1em 0.2em 3px rgba(19, 19, 20,0.6));
     /* Fonts */
     --mainFont: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    --loginboxColor: rgb(110,70,134,0.34);
 }
 body{
     height: auto;
@@ -36,6 +37,31 @@ code{
     width: calc( 100% - 2em );
     padding: 1em;
     background-color: var(--codeBackground)
+}
+.routes{
+    line-height: 1.25em;
+}
+.routes a{
+    font-size: 1em;
+    filter: unset;
+}
+.routes-title{
+    background-color: rgba(240,255,255,0.4);
+    padding: 0.2em;
+}
+.routes-odd{
+    background-color: rgba(240,255,255,0.2);
+    padding: 0.2em;
+}
+.routes-even{
+    padding: 0.2em;
+}
+.method{
+    display: inline-block;
+    text-align: right;
+    padding-right: 1em;
+    margin-right: 0.25em;
+    width: 4em;
 }
 a img{
     height: 1em;
@@ -65,7 +91,9 @@ img{
 .profile{
     position: relative;
     top: 0.35em;
-    background: center url('/static/img/beard.svg');
+    background: url(/static/img/beard.svg);
+    background-size: cover;
+    background-repeat: no-repeat;
     font-size: 2.5em;
     width: 1.2em;
     height: 1.2em;
@@ -78,7 +106,9 @@ img{
     cursor: pointer;
 }
 .profile:hover{
-    background: center url('/static/img/beard-hover.svg');
+    background: url('/static/img/beard-hover.svg');
+    background-size: cover;
+    background-repeat: no-repeat;
     filter: drop-shadow(0.15em 0.4em 0.2em rgba(0, 0, 0,1));
 }
 .profile a:hover{
@@ -387,6 +417,7 @@ a:hover{
 .notification{
     text-align: center;
     font-size: 0.75em;
+    padding-bottom: 0.5em;
 }
 .login{
     display: flex;
@@ -398,6 +429,10 @@ a:hover{
     flex-wrap: nowrap;
     align-content: center;
     font-size: 1.5em;
+}
+.login-header{
+    font-size: 0.75em;
+    text-align: center;
 }
 .login input{
     height: 1.25em;
@@ -435,6 +470,14 @@ a:hover{
     border-radius: 0.5em;
     min-width: var(--navbarButtonMinWidth);
     filter: drop-shadow(0.25em 0.5em 0.2em rgba(0, 0, 0,1));
+}
+.box{
+    background-color: var(--loginboxColor);
+    padding: 0.5em;
+    border-radius: 1em;
+    filter: drop-shadow(2px 4px 6px black);
+    min-width: 300px;
+    width: 50%;
 }
 .setupContainer{
     display: flex;
@@ -533,15 +576,18 @@ a:hover{
     flex-direction: row;
     justify-content: space-between;
     flex-wrap: nowrap;
+    align-content: flex-end;
+    align-items: flex-end;
     overflow: hidden;
     top: 2.65em;
     padding: 0.5em;
+    padding-top: 1em;
     background-color: rgba(240,255,255,0.9);
     text-align: right;
     font-size: 1.5em;
     font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
     filter: unset;
-    height: 4em;
+    max-height: 4em;
     z-index: 98;
     transition: height 1s ease, padding 1s ease;
     filter: drop-shadow(0 0 0.5em rgba(19, 19, 20,0.6));
@@ -564,11 +610,14 @@ a:hover{
     padding-right: 2em;
     text-align: left;
 }
-.menu-events{
-    text-align: left;
-}
 .menuHide{  
     padding:0;
     height: 0em;
     overflow: hidden;
+}
+.menu-events svg{
+    background-size: 0.5em 0.5em;
+}
+.menu-events .filter{
+    fill: rgb(28, 62, 211)
 }

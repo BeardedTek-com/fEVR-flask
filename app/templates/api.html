@@ -2,6 +2,6 @@
 
 {% block content %}
     <div class="doc">
-        <pre>{{ contents }}</pre>
+        {{ contents|safe }}
     </div>
 {% endblock %}

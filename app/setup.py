@@ -1,23 +1,22 @@
 from flask import Blueprint, render_template, redirect, url_for, request, flash, jsonify
 from flask_login import login_required
 from werkzeug.security import generate_password_hash
-from .models import User,frigate,cameras,events,apiAuth,config
+from .models.models import User,frigate,cameras,events,apiAuth,config
 import sqlalchemy
 from .helpers.drawSVG import drawSVG
 from . import db
 from .rndpwd import randpwd
-from .helpers.menu import menuState
+from .helpers.cookies import cookies
 setup = Blueprint('setup', __name__)
 
 
 @setup.route('/setup')
 def setupFwd():
-    return redirect("/setup/start")
-
+    return redirect("/setup/admin")
 @setup.route('/setup/<Item>')
 @login_required
 def setupfEVR(Item):
-    menu=menuState.get()
+    menu=cookies.getCookie('menu')
     status = {'db':{'cameras':False,'frigate':False,'User':False,'apiAuth':False,'config':False}}
     tables = {
         'frigate':frigate,
@@ -63,7 +62,6 @@ def setupfEVR(Item):
 
 
 @setup.route('/setup/admin')
-@login_required
 def setupAdmin():
     # Sanity checks...
     admin = User.query.filter_by(group='admin').first()

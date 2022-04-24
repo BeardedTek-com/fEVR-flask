@@ -4,11 +4,11 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import login_user, logout_user, login_required, current_user
 from IPy import IP
 
-from .models import User, apiAuth
+from .models.models import User, apiAuth
 from . import db
 from .logit import logit
 from .rndpwd import randpwd
-from .helpers.menu import menuState
+from  .helpers.cookies import cookies
 log=logit()  
 
 auth = Blueprint('auth', __name__)
@@ -109,7 +109,7 @@ def apiAuthenticate():
 
 @auth.route('/login',methods=['GET'])
 def login():
-    menu=menuState.get()
+    Cookies = cookies.getCookies(['menu'])
     fwd = "/"
     fwdName = "access fEVR"
     fwd = request.args.get('next')
@@ -119,7 +119,9 @@ def login():
         for val in values:
             if fwd == val:
                 fwdName = values[val]
-    return render_template('login.html',menu=menu,fwd=fwd,fwdName=fwdName)
+    else:
+        fwd = "/"
+    return render_template('login.html',menu=Cookies['menu'],fwd=fwd,fwdName=fwdName)
     
 @auth.route('/login', methods=['POST'])
 def loginProcessForm():
@@ -143,13 +145,14 @@ def loginProcessForm():
 
 @auth.route('/signup')
 def signup():
-    menu = menuState.get()
-    page = "/"
+    Cookies = cookies.getCookies(['menu','page'])
+    cookiejar = {'page':'/'}
     db.create_all()
     if User.query.first() == None:
-        return render_template('setupadmin.html',type='admin')
+        resp = render_template('setupadmin.html',type='admin')
     else:
-        return render_template('signup.html',menu=menu,page=page)
+        resp = render_template('signup.html',menu=Cookies['menu'],page=Cookies['page'])
+    return cookies.setCookies(cookiejar,resp)
 
 @auth.route('/signup', methods=['POST'])
 def signupProcessForm():
@@ -186,17 +189,17 @@ def logout():
 @auth.route('/profile')
 @login_required
 def profile():
-    menu = menuState.get()
-    page = "/profile"
+    Cookies = cookies.getCookies(['menu','page'])
+    cookiejar = {'page':'/profile'}
     user = current_user
     keys = apiAuth.query.all()
-    return render_template('user.html',menu=menu,user=user,keys=keys,page=page)
+    return cookies.setCookies(cookiejar,render_template('user.html',menu=Cookies['menu'],user=user,keys=keys,page=Cookies['page']))
 
 @auth.route('/profile',methods=['POST'])
 @login_required
 def profilePost():
-    page = "/profile"
-    user = current_user
+    Cookies = cookies.getCookies(['menu','page'])
+    cookiejar = {'page':'/profile'}
     keys = apiAuth.query.all()
     form = {}
     Password = 0
@@ -217,7 +220,7 @@ def profilePost():
             for field in missingFields:
                 flashmsg += f"{field} "
             flash(flashmsg)
-            return render_template('user.html',user=user,keys=keys,page=page)
+            return cookies.setCookies(cookiejar,render_template('user.html',user=user,keys=keys,page=page))
     query = User.query.filter_by(email=form['email']).first()
     if query.email == form['email']:
         query.name = form['name']
@@ -229,19 +232,19 @@ def profilePost():
                 if query.password != password:
                     query.password = password
                     flash('Password successfully changed.')
-                    return render_template('user.html',user=user,keys=keys,page=page)
+                    return cookies.setCookies(cookiejar,render_template('user.html',user=user,keys=keys,page=page))
                 else:
                     flash('Please use a different password.')
-                    return render_template('user.html',user=user,keys=keys,page=page)
+                    return cookies.setCookies(cookiejar,render_template('user.html',user=user,keys=keys,page=page))
             else:
                 flash('Passwords do not match.  Try again.')
-                return render_template('user.html',user=user,keys=keys,page=page)
+                return cookies.setCookies(cookiejar,render_template('user.html',user=user,keys=keys,page=page))
         elif changePassword == 1:
             if Password == 1:
                 flash('You must type your password')
-                return render_template('user.html',user=user,keys=keys,page=page)
+                return cookies.setCookies(cookiejar,render_template('user.html',user=user,keys=keys,page=page))
             elif retypePassword == 1:
                 flash('You must retype your password')
-                return render_template('user.html',user=user,keys=keys,page=page)
+                return cookies.setCookies(cookiejar,render_template('user.html',user=user,keys=keys,page=page))
         db.session.commit()
-        return render_template('user.html',user=user,keys=keys,page=page)
+        return cookies.setCookies(cookiejar,render_template('user.html',user=user,keys=keys,page=page))

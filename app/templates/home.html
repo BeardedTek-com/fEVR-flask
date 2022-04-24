@@ -31,24 +31,19 @@
         <div class="menu {{'menuHide' if menu=="closed"}}" id="menu">
             <div class="menu-left">
                 <div class="menu-events">
-                    <br/>
-                    <a href="/latest">Latest Events</a><br/>
                     <a href="/all">All Events</a><br/>
-                    <a onclick="filters()">Filters</a><br/>
+                    <a onclick='showCameras();'' style="cursor:pointer">Cameras</a><br/>
                 </div>
             </div>
             <div class="menu-right">
                 <div class="menu-system">
-                    <a target="_blank" href="https://docs.fevr.video">Documentation</a><br/>
-                    <a target="_blank" href="https://github.com/beardedtek-com/fEVR/discussions">Discussions</a><br/>
-                    <a target="_blank" href="https://fevr.video">Official Site</a><br/>
-                    <a target="_blank" href="https://github.com/beardedtek-com/fEVR/">GitHub</a>
+                    <a href="/routes">Sitemap</a><br>
+                    <a href="/setup">Settings</a>
                 </div>
                 <div class="menu-user">
                     <a href="/profile">Edit Profile</a><br/>
-                    <a href="/logout?page={{page}}">Logout</a><br/>
-                    <a href="/routes">Sitemap</a><br>
-                    <a href="/setup">Settings</a>
+                    <a href="/logout?page={{page}}">Logout</a>
+                    
                 </div>
             </div>
         </div>
@@ -64,11 +59,11 @@
                 </div>
                 </div>
                 <div class="footerContents">
+                    <div class="footerContent footercopyleft"><a target='_blank' href='https://beardedtek.com'><span class='copyleft'>&copy;</span>2022 BeardedTek.com</a></div>
                     <div class="footerContent"><a href='https://github.com/beardedtek-com/fEVR/discussions' target='_blank'>Get Support</a></div>
                     <div class="footerContent"><a href='https://github.com/beardedtek-com/fevr'>GitHub</a></div>
                     <div class="footerContent"><a href='https://fevr.video' target='_blank'>fEVR.video</a></div>
                     <div class="footerContent"><a href="https://docs.fevr.video" target='_blank'>docs.fEVR.video</a></div>
-                    <div class="footerContent footercopyleft"><a target='_blank' href='https://beardedtek.com'><span class='copyleft'>&copy;</span>2022 BeardedTek.com</a></div>
                 </div>
             </div>
             
