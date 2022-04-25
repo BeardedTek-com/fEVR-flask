@@ -27,7 +27,7 @@ from random import randint
 import socket
 import requests
 from math import floor
-from .logit import logit
+from logit import logit
 import socket
 
 class getLocalIP:
@@ -41,12 +41,11 @@ class auth:
         JsonPost = {'key':apikey,'ip':getLocalIP.addr}
         # Sen the post using our session
         authResponse = rSession.post(f"{transport}{fevr}/apiAuth", json=JsonPost)
-        logit.error.execute(authResponse.content,src=__name__)
+        logit.execute(authResponse.content,src=__name__)
     
 class fevrMQTT:
     def __init__(self):
         self.script = 'mqtt_client'
-        self.error = logit(debug=True)
         hostname = socket.gethostname()
         self.clientID = f"fevr-{hostname}-{randint(0,100)}"
         self.getVars()
@@ -91,14 +90,14 @@ class fevrMQTT:
                     excluded = f"Topic Limit Exceeded. Excluded Topics: "
                 excluded += f"'{topic}' "
         if excluded:
-            self.error.execute(excluded,src=self.script)
+            logit.execute(excluded,src=self.script)
     def connect_mqtt(self) -> mqtt_client:
         def on_connect(client, userdata, flags, rc):
             if rc == 0:
-                self.error.execute(f"Connected to {self.broker}:{self.port} as {self.clientID}",src=self.script)
-                self.error.execute(f"Subscribed to:{self.topics}".replace('[','\t').replace(']','').replace(', ','\t').replace("'",""),src=self.script)
+                logit.execute(f"Connected to {self.broker}:{self.port} as {self.clientID}",src=self.script)
+                logit.execute(f"Subscribed to:{self.topics}".replace('[','\t').replace(']','').replace(', ','\t').replace("'",""),src=self.script)
             else:
-                self.error.execute("Failed to connect, return code %d", rc,src=self.script)
+                logit.execute("Failed to connect, return code %d", rc,src=self.script)
         client = mqtt_client.Client(self.clientID)
         if self.username and self.password:
             client.username_pw_set(self.username, self.password)
@@ -107,13 +106,13 @@ class fevrMQTT:
         return client
     def processMsg(self,msg,topic):
         if 'available' in topic:
-            self.error.execute('frigate is online',src=self.script)
+            logit.execute('frigate is online',src=self.script)
         elif 'stats' in topic:
             msg = loads(msg)
             for key in msg:
                 if key == 'service':
-                    self.error.execute('Frigate Information:',src=self.script)
-                    self.error.execute(f"\tVersion: {msg[key]['version']}",src=self.script)
+                    logit.execute('Frigate Information:',src=self.script)
+                    logit.execute(f"\tVersion: {msg[key]['version']}",src=self.script)
                     uptime = msg[key]['uptime']
                     uptimeM = floor(uptime/60)
                     uptimeS = uptime - (uptimeM*60)
@@ -124,7 +123,7 @@ class fevrMQTT:
                     if 1 > uptimeD:
                         uptimeD = 0
                     uptimeStr = f"Uptime: {uptimeD} days, {uptimeH} hours, {uptimeM} minutes and {uptimeS} seconds."
-                    self.error.execute(f"\t{uptimeStr}",src=self.script)
+                    logit.execute(f"\t{uptimeStr}",src=self.script)
         elif 'event' in topic:
             # Authenticate first
             # Open a session so we can use the session cookie
@@ -139,7 +138,7 @@ class fevrMQTT:
                 camera = after['camera']
                 eventid = after['id']
                 addEventResponse = rSession.get(f"{self.transport}{self.fevr}/api/events/add/{eventid}/{camera}/{type}/{score}")
-                self.error.execute(addEventResponse.content,src=self.script)
+                logit.execute(addEventResponse.content,src=self.script)
     def subscribe(self, client: mqtt_client):
         def on_message(client, userdata, msg):
             ## This is where our code goes to do what we want when a message is received
