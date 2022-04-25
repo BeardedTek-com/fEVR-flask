@@ -93,13 +93,13 @@ def setupAdminProcessForm():
             flash('Passwords do not match.')
             return redirect(url_for('setup.setupAdmin'))
         
-        email = User.query.filter_by(email=email).first() # if this returns a user, then the email already exists in database
-        if email: # if a user is found, we want to redirect back to signup page so user can try again
+        emailCheck = User.query.filter_by(email=email).first() # if this returns a user, then the email already exists in database
+        if emailCheck: # if a user is found, we want to redirect back to signup page so user can try again
             flash('Email Already Exists.')
             return redirect(url_for('setup.setupAdmin'))
         
-        username = User.query.filter_by(name=name).first()
-        if username: # Does this username already exist?
+        nameCheck = User.query.filter_by(name=name).first()
+        if nameCheck: # Does this username already exist?
             flash('Username Taken')
         # create a new user with the form data. Hash the password so the plaintext version isn't saved.
         new_user = User(email=email, name=name, password=generate_password_hash(password, method='sha256'), group='admin', enabled=True, resetpwd=False)
