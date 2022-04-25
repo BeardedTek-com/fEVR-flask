@@ -147,6 +147,7 @@ def signup():
 
 @auth.route('/signup', methods=['POST'])
 def signupProcessForm():
+    status = {'db':{'cameras':False,'frigate':False,'User':False,'apiAuth':False,'config':False}}
     # code to validate and add user to database goes here
     email = request.form.get('email')
     name = request.form.get('name')
@@ -159,7 +160,7 @@ def signupProcessForm():
         return redirect(url_for('auth.signup'))
 
     # create a new user with the form data. Hash the password so the plaintext version isn't saved.
-    new_user = User(email=email, name=name, password=generate_password_hash(password, method='sha256'))
+    new_user = User(email=email, name=name, password=generate_password_hash(password, method='sha256', items=status))
 
     # add the new user to the database
     db.session.add(new_user)
