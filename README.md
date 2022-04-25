@@ -4,6 +4,23 @@ This version of fEVR is EXPERIMENTAL and under VERY HEAVY development.
 
 Please assume that each new commit has breaking changes and start from scratch.
 
+# Goals
+In order to overwrite the main branch of beardedtek-com/fevr I want the following things in place:
+
+By my esitmates, I'm about 95% of the way there.  That last 5% though...
+- Event filtering functioning
+- Setup of fEVR working
+  - Adding first admin user
+  - Adding frigate url info
+  - Adding cameras
+
+
+In the future I plan to implement:
+- Full setup from scratch of:
+  - frigate
+  - rtsp-simple-server
+  - mqtt server
+
 
 # Installation:
 For now, the setup process is incomplete.  Please follow these instruction to get things up and running
@@ -18,6 +35,8 @@ For now, the setup process is incomplete.  Please follow these instruction to ge
 - Home Assistant (for notifications)
 - Proxy Server
   - Python's built in flask server can be flaky.  Sometimes images won't load properly, but I've found with ngnix in front of it these problems do not exist.  If someone could explain why, that would be nice...
+    - NOTE: I do plan on transitioning to possibly gunicorn or another wsgi server, but for now, I'm sticking with this.
+
 
 ## .env Setup
 Copy template.env to .env and adjust as necessary:
