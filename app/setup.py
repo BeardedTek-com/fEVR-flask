@@ -64,6 +64,8 @@ def setupfEVR(Item):
 
 @setup.route('/setup/admin')
 def setupAdmin():
+    # First, let's create the database
+    db.create_all()
     status = {'db':{'cameras':False,'frigate':False,'User':False,'apiAuth':False,'config':False}}
     # Sanity checks...
     admin = User.query.filter_by(group='admin').first()
