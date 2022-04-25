@@ -6,10 +6,8 @@ from IPy import IP
 
 from .models.models import User, apiAuth, cameras
 from . import db
-from .logit import logit
 from .rndpwd import randpwd
 from  .helpers.cookies import cookies
-log=logit()  
 
 auth = Blueprint('auth', __name__)
 
@@ -67,17 +65,13 @@ def apiAuthenticate():
     ip = request.remote_addr
     auth = {"auth":False,"name":None,"authIP":ip,"changed":False,"remember":False}
     requestData = request.get_json()
-    log.execute(f"apiAuth Post Data:{requestData}")
     key = None
     if 'key' in requestData:
         key = requestData['key']
-        log.execute(f"  [ apiAuth Received API KEY ]: {key}",src=__name__)
         entries = apiAuth.query.all()
         if entries:
             for entry in entries:
                 if entry.key == key:
-                    log.execute(f"  [ apiAuth Expected Key ]: {entry.key}")
-                    log.execute(f"  [ apiAuth Received Key ]: {key}")
                     # Check if all of the following match:
                     #   - ip address
                     #   - key
@@ -86,9 +80,7 @@ def apiAuthenticate():
                         auth['auth'] = True
                         auth['name'] = entry.name
                         auth['authIP'] = ip
-                        log.execute(f"  [ auth ]: {auth}",__name__)
                         login_user(entry,remember=True)
-                        log.execute(f"  [ apiAuth AUTHORIZED ]: {auth}",src=__name__)
                         # Check the key limits
                         # Keys can be use limited.
                         # A user that has just a limited key can only log into the site X number of times before key expires
@@ -104,7 +96,6 @@ def apiAuthenticate():
                         # If we changed they key limit or set it to expired, commit it to the database.
                         if auth['changed']:
                             db.session.commit()
-    log.execute(f"  [ apiAuth Returned Value ]: {auth}",src=__name__)
     return jsonify(auth)
 
 @auth.route('/login',methods=['GET'])
@@ -184,7 +175,8 @@ def logout():
     if fwd != None:
         fwd.replace('%2F','/')
     logout_user()
-    return redirect(fwd)
+    cookiejar = {'menu':'closed'}
+    return cookies.setCookies(cookiejar,make_response(redirect(fwd)))
 
 @auth.route('/profile')
 @login_required

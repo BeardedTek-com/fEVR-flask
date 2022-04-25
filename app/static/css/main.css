@@ -650,6 +650,8 @@ a:hover{
 }
 .cameraitem {
     padding-right: 1em;
-    font-size: 0.8em;
     cursor: pointer;
+}
+.cameraitem:hover{
+    color: blue;
 }
