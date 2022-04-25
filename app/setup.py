@@ -45,6 +45,7 @@ def setupfEVR(Item):
                 admail = admin.email
                 admin = [adname,admail]
             return render_template('setupadmin.html',menu=menu,next=next,admin=admin,label=label,page=page,items=status,Item=Item)
+
         elif Item == 'frigate':
             next="/setup/cameras"
         elif Item == 'cameras':
@@ -61,15 +62,15 @@ def setupfEVR(Item):
         return render_template('setup.html',menu=menu,next=next,label=label,page=page,items=status,Item=Item)
 
 
-@setup.route('/setup/admin')
-def setupAdmin():
-    # Sanity checks...
-    admin = User.query.filter_by(group='admin').first()
-    if admin: # If an admin already exists, then go to signup page instead.
-        flash(f"An admin account already exists.<br/>Please sign up for a regular user account.")
-        return redirect(url_for('auth.signup'))
-    else:
-        return render_template('setupadmin.html',passwd = randpwd.generate())
+#@setup.route('/setup/admin')
+#def setupAdmin():
+#    # Sanity checks...
+#    admin = User.query.filter_by(group='admin').first()
+#    if admin: # If an admin already exists, then go to signup page instead.
+#        flash(f"An admin account already exists.<br/>Please sign up for a regular user account.")
+#        return redirect(url_for('auth.signup'))
+#    else:
+#        return render_template('setupadmin.html',passwd = randpwd.generate())
 
 @setup.route('/setup/admin', methods=['POST'])
 @login_required
