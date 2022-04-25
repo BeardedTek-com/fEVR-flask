@@ -61,7 +61,7 @@ def apiFrigate():
         external = frigates['external']
     else:
         external = internal
-    return jsonify({'frigate':internal,'external':external})
+    return {'frigate':internal,'external':external}
 
 @api.route('/api/events/add/<eventid>/<camera>/<object>/<score>')
 @login_required

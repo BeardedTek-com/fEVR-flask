@@ -36,15 +36,19 @@ function shareButton(id,btn,el){
         closeBtn.classList.add('invisible')
     }
 }
-function menu(){
-    Menu = document.getElementById('menu');
-    if (Menu.classList.contains('menuHide')){
-        Menu.classList.remove('menuHide')
-        document.cookie = "menu=open";
-        
+function menu(Menu){
+        m = document.getElementById(Menu);
+        if (m.classList.contains('menuHide')){
+            m.classList.remove('menuHide')
+            cval = "menu"
+            cval += "=open"
+            document.cookie = cval;
+            
+        }
+        else{
+            m.classList.add('menuHide')
+            cval = "menu"
+            cval += "=closed"
+            document.cookie = cval;
+        }
     }
-    else{
-        Menu.classList.add('menuHide')
-        document.cookie = "menu=closed";
-    }
-}

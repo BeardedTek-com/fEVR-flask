@@ -44,7 +44,7 @@ class cameras(db.Model):
 
     def __repr__(self):
     # Returns string representation of dict
-        return str({"id":self.id,"camera":self.camera,"src":self.src})
+        return str({"id":self.id,"camera":self.camera,"hls":self.hls,"rtsp":self.rtsp})
 
     def exists():
     # Returns True if table exists
@@ -60,7 +60,12 @@ class cameras(db.Model):
                 "rtsp"  : camera.rtsp
             }
         return result
-
+    def lst(query):
+        result =[]
+        for row in query:
+            result.append(row.camera)
+        return result
+    
 class events(db.Model):
 # Table     : events
 # Columns   : - id      (auto incrementing primary key)

@@ -1,9 +1,10 @@
-from flask import Blueprint, render_template, redirect, url_for, make_response, flash
+from flask import Blueprint, render_template, redirect, url_for, make_response, flash, request
 from flask_login import login_required
 from sqlalchemy import desc
 from .models.models import frigate, cameras, events, User, apiAuth, config
 from . import api
 from .helpers.cookies import cookies
+from .logit import logit
 main = Blueprint('main',__name__)
 
 
@@ -11,11 +12,13 @@ main = Blueprint('main',__name__)
 @main.route('/')
 @login_required
 def index():
-    menu = cookies.getCookie('menu')
+    Cameras = cameras.lst(cameras.query.all())
+    menu = request.cookies.get('menu')
+    print(f"#################################################")
     page = '/'
     title = 'Latest Events'
     events = api.apiShowLatest()
-    return render_template('events.html',menu=menu,page=page,title=title,events=events)
+    return render_template('events.html',Menu=menu,page=page,title=title,events=events,cameras=Cameras)
 
 @main.route('/latest')
 @login_required
@@ -25,61 +28,75 @@ def latest():
 @main.route('/all')
 @login_required
 def viewAll():
-    menu = cookies.getCookie('menu')
+    Cameras = Cameras = cameras.lst(cameras.query.all())
+    menu = request.cookies.get('menu')
     page = '/all'
     title = 'All Events'
     events = api.apiShowAllEvents()
-    return render_template('events.html',menu=menu,page=page,title=title,events=events)
+    return render_template('events.html',Menu=menu,page=page,title=title,events=events,cameras=Cameras)
 
-@main.route('/filter/<filter>/<value>')
+@main.route('/events/camera/<Camera>')        
 @login_required
-def filterEvents(filter,value):
-    cookiejar = {}
-    menu = cookies.getCookie('menu')
+def viewEventsbyCamera(Camera):
+    Cameras = Cameras = cameras.lst(cameras.query.all())
+    menu = request.cookies.get('menu')
     page = cookies.getCookie('page')
-    title="Filtered Events"
-    time = cookies.getCookie('time')
-    camera = cookies.getCookie('cameras')
-    object = cookies.getCookie('object')
-    score = cookies.getCookie('score')
-    ack = cookies.getCookie('ack')
-    if filter == 'time':
-        time = value
-    elif filter == 'camera':
-        camera = value
-    elif filter == 'object':
-        object = value
-    elif filter == 'score':
-        score = value
-    elif filter == 'ack':
-        ack = value
-    else:
-        flash('Filtering of this type not available')
-    cookiejar = {'menu':menu,'page':page,'title':title,'time':time,'camera':camera,'object':object,'score':score,'ack':ack}
-    query = events.query
-    if camera:
-        query = query.filter(events.camera==camera)
-    if object:
-        query = query.filter(events.object==object)
-    if score:
-        query = query.filter(events.score==score)
-    if ack:
-        query = query.filter_by(events.ack==ack)
-    query = events.dict(query.order_by(desc(events.time)))
-    resp = make_response(render_template('events.html',menu=cookiejar['menu'],page=cookiejar['page'],title=title,events=query))
-    return cookies.setCookies(cookiejar,resp)
-        
-            
-        
+    cookiejar = {'page':page,'cameras':str(Cameras)}
+    title=f"{Camera.title()} Events"
+    query = events.query.filter(events.camera==Camera)
+    resp = make_response(render_template('events.html',Menu=menu,page=cookiejar['page'],title=title,events=events.dict(query),cameras=Cameras))
+    for cookie in cookiejar:
+            resp.set_cookie(cookie,cookiejar[cookie])
+    return resp
 
-        
-                    
-                
-                
+@main.route('/events/camera/<Camera>/<filter>/<value>')
+@login_required
+def viewEventsbyCameraFiltered(Camera,filter,value):
+    Cameras = Cameras = cameras.lst(cameras.query.all())
+    validFilter = False
+    validValue = False
+    validFilters = {'object':
+                        ['car','animal','person'],
+                    'score':
+                        [60,100],
+                    'ack':
+                        ['true','false']
+                    }
+    for fil in validFilters:
+        if filter == fil:
+            validFilter = True
+            if filter == 'score':
+                if validFilters[fil][0] <= int(value) <= validFilters[fil][0]:
+                    validValue = True
+            else:
+                for val in validFilters[fil]:
+                    if val == value:
+                        validValue = True
+    if validFilter and validValue:
+        menu = request.cookies.get('menu')
+        page = cookies.getCookie('page')
+        cookiejar={'page':page}
+        title=f"{Camera.title()} Events by {filter.title()}"
+        if filter == 'object':
+            query = events.query.filter(events.camera==Camera,events.object==value)
+        if filter == 'score':
+            query = events.query.filter(events.camera==Camera,events.score==int(value))
+        if filter == 'ack':
+            query = events.query.filter(events.camera==Camera,events.ack==value)
+    else:
+        flashMessage = f"Invalid filter selected. Valid filters are:"
+        for fil in validFilters:
+            flashMessage += f" {fil}"
+        flashMessage+= "."
+        flash(flashMessage)
+    resp = make_response(render_template('events.html',Menu=menu,page=cookiejar['page'],title=title,events=events.dict(query),cameras=Cameras))
+    return cookies.setCookies(cookiejar,resp)
+
 @main.route('/event/<eventid>/<view>')
 @login_required
 def viewSingle(eventid,view):
-    menu = cookies.getCookie('menu')
+    Cameras = Cameras = cameras.lst(cameras.query.all())
+    menu = request.cookies.get('menu')
     page = f"/event/{eventid}/{view}"
     Frigate = api.apiFrigate()
     frigateURL = Frigate['external']
@@ -110,7 +127,7 @@ def viewSingle(eventid,view):
                 title += f"<div class='view20'>{view.title()}</div>"
         else:
             title += "<div class='view20'> </div>"
-        return render_template('event.html',menu=menu,page=page,title=title,event=event,view=view,frigateURL=frigateURL)
+        return render_template('event.html',Menu=menu,page=page,title=title,event=event,view=view,frigateURL=frigateURL,cameras=Cameras)
     else:
         return redirect(url_for('main.index'))
     

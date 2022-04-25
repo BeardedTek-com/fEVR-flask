@@ -19,9 +19,11 @@
         </div>
     {% endfor %}
 {% else %}
-    <div class="events">
-        Sorry, Nothing to see here yet.<br/>
-        SHOW SETUP DIALOGUE?
+    <div class="events" style="font-size: 2em; text-align:center;">
+        <br/>
+        <br/>
+        Sorry, No events found matching your criteria.<br/><br/>
+        <a onclick='history.back();' style="font-size:1em;cursor:pointer;">Please go back.
     </div>
 {% endif %}
 {% endblock %}
