@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, escape, redirect, url_for, jsonify
+from flask import Blueprint, render_template, escape, redirect, url_for, jsonify, make_response
 from flask_login import login_required, current_user
 from sqlalchemy import desc
 import subprocess
@@ -35,7 +35,7 @@ def apiHome():
             contents += "</div>"
     contents += "</div>"
     resp = render_template('api.html',menu=Cookies['menu'],page='/routes',title=title, contents=contents)
-    return cookies.setCookies(cookiejar,resp)
+    return cookies.setCookies(cookiejar,make_response(resp))
 
 @api.route('/api/frigate/add/<name>/<http>/<ip>/<port>')
 def apiAddFrigate(name,http,ip,port):
