@@ -140,9 +140,9 @@ def signup():
     cookiejar = {'page':'/'}
     db.create_all()
     if User.query.first() == None:
-        resp = render_template('setupadmin.html',type='admin')
+        resp = make_response(render_template('setupadmin.html',type='admin'))
     else:
-        resp = render_template('signup.html',menu=Cookies['menu'],page=Cookies['page'])
+        resp = make_response(render_template('signup.html',menu=Cookies['menu'],page=Cookies['page']))
     return cookies.setCookies(cookiejar,resp)
 
 @auth.route('/signup', methods=['POST'])
