@@ -1,10 +1,10 @@
 import ipaddress
-from flask import Blueprint, render_template, redirect, url_for, request, flash, jsonify
+from flask import Blueprint, render_template, redirect, url_for, request, flash, jsonify, make_response
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import login_user, logout_user, login_required, current_user
 from IPy import IP
 
-from .models.models import User, apiAuth
+from .models.models import User, apiAuth, cameras
 from . import db
 from .logit import logit
 from .rndpwd import randpwd
@@ -189,17 +189,21 @@ def logout():
 @auth.route('/profile')
 @login_required
 def profile():
+    Cameras = Cameras = cameras.lst(cameras.query.all())
     Cookies = cookies.getCookies(['menu','page'])
     cookiejar = {'page':'/profile'}
     user = current_user
     keys = apiAuth.query.all()
-    return cookies.setCookies(cookiejar,render_template('user.html',menu=Cookies['menu'],user=user,keys=keys,page=Cookies['page']))
+    return cookies.setCookies(cookiejar,make_response(render_template('user.html',menu=Cookies['menu'],cameras=Cameras,user=user,keys=keys,page=Cookies['page'])))
 
 @auth.route('/profile',methods=['POST'])
 @login_required
 def profilePost():
+    user = current_user.name
     Cookies = cookies.getCookies(['menu','page'])
-    cookiejar = {'page':'/profile'}
+    page = "/profile"
+    menu=Cookies['menu']
+    cookiejar = {'page':page}
     keys = apiAuth.query.all()
     form = {}
     Password = 0
@@ -220,7 +224,7 @@ def profilePost():
             for field in missingFields:
                 flashmsg += f"{field} "
             flash(flashmsg)
-            return cookies.setCookies(cookiejar,render_template('user.html',user=user,keys=keys,page=page))
+            return cookies.setCookies(cookiejar,make_response(render_template('user.html',menu=menu,user=user,keys=keys,page=page)))
     query = User.query.filter_by(email=form['email']).first()
     if query.email == form['email']:
         query.name = form['name']
@@ -232,19 +236,19 @@ def profilePost():
                 if query.password != password:
                     query.password = password
                     flash('Password successfully changed.')
-                    return cookies.setCookies(cookiejar,render_template('user.html',user=user,keys=keys,page=page))
+                    return cookies.setCookies(cookiejar,make_response(render_template('user.html',menu=menu,user=user,keys=keys,page=page)))
                 else:
                     flash('Please use a different password.')
-                    return cookies.setCookies(cookiejar,render_template('user.html',user=user,keys=keys,page=page))
+                    return cookies.setCookies(cookiejar,make_response(render_template('user.html',menu=menu,user=user,keys=keys,page=page)))
             else:
                 flash('Passwords do not match.  Try again.')
-                return cookies.setCookies(cookiejar,render_template('user.html',user=user,keys=keys,page=page))
+                return cookies.setCookies(cookiejar,make_response(render_template('user.html',menu=menu,user=user,keys=keys,page=page)))
         elif changePassword == 1:
             if Password == 1:
                 flash('You must type your password')
-                return cookies.setCookies(cookiejar,render_template('user.html',user=user,keys=keys,page=page))
+                return cookies.setCookies(cookiejar,make_response(render_template('user.html',menu=menu,user=user,keys=keys,page=page)))
             elif retypePassword == 1:
                 flash('You must retype your password')
-                return cookies.setCookies(cookiejar,render_template('user.html',user=user,keys=keys,page=page))
+                return cookies.setCookies(cookiejar,make_response(render_template('user.html',menu=menu,user=user,keys=keys,page=page)))
         db.session.commit()
-        return cookies.setCookies(cookiejar,render_template('user.html',user=user,keys=keys,page=page))
+        return cookies.setCookies(cookiejar,make_response(render_template('user.html',menu=menu,user=user,keys=keys,page=page)))
