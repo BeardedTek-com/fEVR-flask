@@ -74,7 +74,6 @@ def setupAdmin():
         return render_template('setupadmin.html',passwd = randpwd.generate(),items=status)
 
 @setup.route('/setup/admin', methods=['POST'])
-@login_required
 def setupAdminProcessForm():
     # Sanity checks...
     admin = User.query.filter_by(group='admin').first()
