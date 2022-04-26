@@ -91,6 +91,7 @@ class fevrMQTT:
                 excluded += f"'{topic}' "
         if excluded:
             logit.execute(excluded,src=self.script)
+        logit.execute(f"fevr:{self.fevr} | broker: {self.broker} | port: {self.port} | user: {self.username} | password: {self.password} | https: {args.https} | apiKey: {self.apikey} | topics: {self.topics}", src=__name__)
     def connect_mqtt(self) -> mqtt_client:
         def on_connect(client, userdata, flags, rc):
             if rc == 0:
@@ -128,7 +129,7 @@ class fevrMQTT:
             # Authenticate first
             # Open a session so we can use the session cookie
             rSession = requests.Session()
-            auth.api(self.apikey,self.transport,self.fevr,rSession)
+            auth.api(self.transport,self.apikey,self.fevr,rSession)
             event = loads(msg)
             type = event['type']
             after = event['after']
@@ -137,7 +138,9 @@ class fevrMQTT:
                 score = floor(float(after['score'])*100)
                 camera = after['camera']
                 eventid = after['id']
-                addEventResponse = rSession.get(f"{self.transport}{self.fevr}/api/events/add/{eventid}/{camera}/{type}/{score}")
+                fEVRurl = f"{self.transport}{self.fevr}/api/events/add/{eventid}/{camera}/{type}/{score}"
+                addEventResponse = rSession.get(fEVRurl)
+                logit.execute(fEVRurl,src=__name__)
                 logit.execute(addEventResponse.content,src=self.script)
     def subscribe(self, client: mqtt_client):
         def on_message(client, userdata, msg):
