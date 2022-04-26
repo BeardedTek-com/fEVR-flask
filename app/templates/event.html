@@ -4,11 +4,11 @@
 <div class='events'>
     <div class="eventView">
         {% if view == 'snap' or view == 'del' %}
-        <img class='viewport' src='/static/events/{{ event["eventid"]}}/snapshot.jpg'>
+        <img class='viewport' alt="{{event.eventid}} - {{event.object}} in {{event.camera}}" src='/static/events/{{ event["eventid"]}}/snapshot.jpg'>
         {% elif view == 'ack' or view == 'unack' %}
-        <img class='viewport' src='/static/events/{{ event["eventid"]}}/snapshot.jpg'>
+        <img class='viewport' alt="{{event.eventid}} - {{event.object}} in {{event.camera}}" src='/static/events/{{ event["eventid"]}}/snapshot.jpg'>
         {% elif view == 'clip' %}
-        <video class="viewport" controls autoplay>
+        <video  alt="{{event.eventid}} - {{event.object}} in {{event.camera}}" class="viewport" controls autoplay>
             <source src="/static/events/{{event['eventid']}}/clip.mp4" type="video/mp4">
         </video>
         {% elif view == 'live' %}

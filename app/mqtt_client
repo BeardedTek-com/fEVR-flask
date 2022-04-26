@@ -91,7 +91,7 @@ class fevrMQTT:
                 excluded += f"'{topic}' "
         if excluded:
             logit.execute(excluded,src=self.script)
-        logit.execute(f"fevr:{self.fevr} | broker: {self.broker} | port: {self.port} | user: {self.username} | password: {self.password} | https: {args.https} | apiKey: {self.apikey} | topics: {self.topics}", src=__name__)
+        #logit.execute(f"fevr:{self.fevr} | broker: {self.broker} | port: {self.port} | user: {self.username} | password: {self.password} | https: {args.https} | apiKey: {self.apikey} | topics: {self.topics}", src=__name__)
     def connect_mqtt(self) -> mqtt_client:
         def on_connect(client, userdata, flags, rc):
             if rc == 0:
@@ -108,23 +108,6 @@ class fevrMQTT:
     def processMsg(self,msg,topic):
         if 'available' in topic:
             logit.execute('frigate is online',src=self.script)
-        elif 'stats' in topic:
-            msg = loads(msg)
-            for key in msg:
-                if key == 'service':
-                    logit.execute('Frigate Information:',src=self.script)
-                    logit.execute(f"\tVersion: {msg[key]['version']}",src=self.script)
-                    uptime = msg[key]['uptime']
-                    uptimeM = floor(uptime/60)
-                    uptimeS = uptime - (uptimeM*60)
-                    uptimeH=floor(uptimeM/60)
-                    uptimeM = floor(uptimeM - (uptimeH*60))
-                    uptimeD=floor(uptimeH/24)
-                    uptimeH = floor(uptimeH - (uptimeD*24))
-                    if 1 > uptimeD:
-                        uptimeD = 0
-                    uptimeStr = f"Uptime: {uptimeD} days, {uptimeH} hours, {uptimeM} minutes and {uptimeS} seconds."
-                    logit.execute(f"\t{uptimeStr}",src=self.script)
         elif 'event' in topic:
             # Authenticate first
             # Open a session so we can use the session cookie

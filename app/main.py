@@ -14,13 +14,16 @@ main = Blueprint('main',__name__)
 @login_required
 def index():
     Cameras = cameras.lst(cameras.query.all())
-    menu = request.cookies.get('menu')
-    print(f"#################################################")
+    if request.cookies.get('menu'):
+        menu = request.cookies.get('menu')
+    else:
+        menu = 'closed'
+    cookiejar = {'menu':menu}
     page = '/'
     title = 'Latest Events'
     db.create_all()
     Events = events.query.order_by(desc(events.time)).order_by(desc(events.time)).limit(12).all()
-    return render_template('events.html',Menu=menu,page=page,title=title,events=Events,cameras=Cameras,camera="all")
+    return cookies.setCookies(cookiejar,make_response(render_template('events.html',Menu=menu,page=page,title=title,events=Events,cameras=Cameras,camera="all")))
 
 @main.route('/latest')
 @login_required
@@ -31,20 +34,36 @@ def latest():
 @login_required
 def viewAll():
     Cameras = Cameras = cameras.lst(cameras.query.all())
-    menu = request.cookies.get('menu')
+    if request.cookies.get('menu'):
+        menu = request.cookies.get('menu')
+    else:
+        menu = 'closed'
+    cookiejar = {'menu':menu}
+    page = '/'
+    title = 'Latest Events'
+    cookiejar = {'menu':menu}
     page = '/all'
     title = 'All Events'
     db.create_all()
     Events = events.query.order_by(desc(events.time)).order_by(desc(events.time)).all()
-    return render_template('events.html',Menu=menu,page=page,title=title,events=Events,cameras=Cameras,camera="all")
+    cookiejar = {'menu':'closed'}
+    return cookies.setCookies(cookiejar,make_response(render_template('events.html',Menu=menu,page=page,title=title,events=Events,cameras=Cameras,camera="all")))
 
 @main.route('/events/camera/<Camera>')        
 @login_required
 def viewEventsbyCamera(Camera):
     Cameras = Cameras = cameras.lst(cameras.query.all())
-    menu = request.cookies.get('menu')
-    page = cookies.getCookie('page')
-    cookiejar = {'page':page,'cameras':str(Cameras)}
+    if request.cookies.get('menu'):
+        menu = request.cookies.get('menu')
+    else:
+        menu = 'closed'
+    cookiejar = {'menu':menu}
+    if cookies.getCookie('page'):
+        page = cookies.getCookie('page')
+    else:
+        page = "/"
+    cookiejar['page'] = page
+    cookiejar['cameras'] = str(Cameras)
     title=f"{Camera.title()} Events"
     Events = events.query.filter(events.camera==Camera).order_by(desc(events.time)).all()
     resp = make_response(render_template('events.html',Menu=menu,page=cookiejar['page'],title=title,events=Events,cameras=Cameras,camera=Camera))
@@ -55,7 +74,13 @@ def viewEventsbyCamera(Camera):
 @main.route('/events/camera/<Camera>/<filter>/<value>')
 @login_required
 def viewEventsbyCameraFiltered(Camera,filter,value):
-    Cameras = Cameras = cameras.lst(cameras.query   .all())
+    cookiejar = {}
+    Cameras = Cameras = cameras.lst(cameras.query.all())
+    if request.cookies.get('menu'):
+        menu = request.cookies.get('menu')
+    else:
+        menu = 'closed'
+    cookiejar['menu'] = menu
     validFilter = False
     validValue = False
     validFilters = {'object':
@@ -76,9 +101,8 @@ def viewEventsbyCameraFiltered(Camera,filter,value):
                     if val == value:
                         validValue = True
     if validFilter and validValue:
-        menu = request.cookies.get('menu')
         page = cookies.getCookie('page')
-        cookiejar={'page':page}
+        cookiejar['page'] = page
         title=f"{Camera.title()} Events by {value.title()}"
         if Camera == "all":
             if filter == 'object':
@@ -106,9 +130,15 @@ def viewEventsbyCameraFiltered(Camera,filter,value):
 @main.route('/event/<eventid>/<view>')
 @login_required
 def viewSingle(eventid,view):
+    cookiejar = {}
     Cameras = Cameras = cameras.lst(cameras.query.all())
-    menu = request.cookies.get('menu')
+    if request.cookies.get('menu'):
+        menu = request.cookies.get('menu')
+    else:
+        menu = 'closed'
+    cookiejar['menu'] = menu
     page = f"/event/{eventid}/{view}"
+    cookiejar['page'] = page
     Frigate = api.apiFrigate()
     frigateURL = Frigate['external']
     if view == 'ack':
@@ -117,7 +147,7 @@ def viewSingle(eventid,view):
         api.apiUnackEvent(eventid)
     elif view == 'delOK':
         api.apiDelEvent(eventid)
-        return redirect(url_for('main.index'))
+        resp = redirect(url_for('main.index'))
     query = events.query.filter_by(eventid=eventid).order_by()
     query = events.dict(query)
     for item in query:
@@ -138,9 +168,9 @@ def viewSingle(eventid,view):
                 title += f"<div class='view20'>{view.title()}</div>"
         else:
             title += "<div class='view20'> </div>"
-        return render_template('event.html',Menu=menu,page=page,title=title,event=event,view=view,frigateURL=frigateURL,cameras=Cameras)
+        resp = make_response(render_template('event.html',Menu=menu,page=page,title=title,event=event,view=view,frigateURL=frigateURL,cameras=Cameras))
     else:
-        return redirect(url_for('main.index'))
-    
+        resp = redirect(url_for('main.index'))
+    return cookies.setCookies(cookiejar,resp)
 
     

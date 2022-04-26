@@ -20,7 +20,7 @@
     <body class="bg-dark">
         <div class="navbar bg-dark">
             <div class="logo">
-                <a href="/"><img src="/static/img/fevr.svg"></a>
+                <a href="/"><img alt="fEVR Logo" src="/static/img/fevr.svg"></a>
             </div>
             <div class="links noSelect">
                 {% import "menu.html" as menu %}
@@ -31,8 +31,8 @@
         <div class="menu {{'menuHide' if Menu=="closed"}}" id="mainMenu">
             <div class="menu-left">
                 <div class="menu-events">
-                    <a href="/latest">Latest Events</a><br/>
                     <a href="/all">All Events</a><br/>
+                    <a href="/latest">Latest Events</a><br/>
                 </div>
             </div>
             <div class="menu-right">
@@ -52,19 +52,6 @@
             <div class="description">
                 <div class="tagline">
                     {{ title|safe }}
-                </div>
-                <div class="filters">
-                    <div class="filter">Filters:</div>
-                    <div class="filter"><a href="/events/camera/{{camera}}/object/person">Person</a></div>
-                    <div class="filter"><a href="/events/camera/{{camera}}/object/animal">Animal</a></div>
-                    <div class="filter"><a href="/events/camera/{{camera}}/object/car">Vehicle</a></div>
-                    {% if camera == "all" %}
-                    <div class="filter"><a href="/">Latest</a></div>
-
-                    <div class="filter"><a href="/all">All</a></div>
-                    {% else %}
-                    <div class="filter"><a href="/events/camera/{{camera}}">All</a></div>
-                    {% endif %}
                 </div>
                 <div id="container" class="contentContainer">
                     {% block content %}

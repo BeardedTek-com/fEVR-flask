@@ -173,8 +173,9 @@ def signupProcessForm():
 def logout():
     fwd = "/"
     fwd = request.args.get('page')
-    if fwd != None:
-        fwd.replace('%2F','/')
+    if fwd == None:
+        fwd = "/"
+    fwd.replace('%2F','/')
     logout_user()
     cookiejar = {'menu':'closed'}
     return cookies.setCookies(cookiejar,make_response(redirect(fwd)))

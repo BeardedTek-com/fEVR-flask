@@ -451,6 +451,7 @@ select:hover{
     align-items: baseline;
     padding-left: 2em;
     padding-bottom: 1em;
+    width: 100%;
 }
 .filter {
     padding-right: 1em;

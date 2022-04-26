@@ -40,15 +40,11 @@ function menu(Menu){
         m = document.getElementById(Menu);
         if (m.classList.contains('menuHide')){
             m.classList.remove('menuHide')
-            cval = "menu"
-            cval += "=open"
-            document.cookie = cval;
+            document.cookie = "menu=open;path=/";
             
         }
         else{
             m.classList.add('menuHide')
-            cval = "menu"
-            cval += "=closed"
-            document.cookie = cval;
+            document.cookie = "menu=closed;path=/";
         }
     }

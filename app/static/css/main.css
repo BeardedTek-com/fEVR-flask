@@ -593,6 +593,7 @@ a:hover{
     z-index: 98;
     transition: height 1s ease, padding 1s ease, padding-top 1s ease,padding-bottom 1s ease, padding-left 1s ease, padding-right 1s ease;
     filter: drop-shadow(0 0 0.5em rgba(19, 19, 20,0.6));
+    line-height: 1.25em;
 }
 .menu div{
     transition: height 1s ease, padding 1s ease, padding-top 1s ease,padding-bottom 1s ease, padding-left 1s ease, padding-right 1s ease;
@@ -627,6 +628,9 @@ a:hover{
     height:0;
     transition: height 1s ease, padding 1s ease;
 }
+.menu-events{
+    text-align: left;
+}
 .menu-events svg{
     background-size: 0.5em 0.5em;
 }
@@ -639,11 +643,12 @@ a:hover{
     flex-direction: row;
     justify-content: flex-start;
     padding-left: 0.4em;
-    padding-top: 0.5em;
+    padding-top: 0.15em;
     z-index: 98;
     transition: height 1s ease, padding 1s ease, padding-top 1s ease,padding-bottom 1s ease, padding-left 1s ease, padding-right 1s ease;
     filter: drop-shadow(0 0 0.5em rgba(19, 19, 20,0.6));
     overflow: hidden;
+    flex-wrap: wrap;
 }
 .cameraMenu div{
     transition: height 1s ease, padding 1s ease, padding-top 1s ease,padding-bottom 1s ease, padding-left 1s ease, padding-right 1s ease;
