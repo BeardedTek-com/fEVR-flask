@@ -83,16 +83,13 @@ class events(db.Model):
     score = db.Column(db.Integer)
     ack = db.Column(db.String(10))
 
-    def __repr__(self):
-    # Returns string representation of dict
-        return str({"id": self.id,"eventid":self.eventid,"time":self.time,"camera":self.camera,"object":self.object,"score":self.score,"ack":self.ack})
 
     def exists():
     # Returns True if table exists
         inspector = inspect(db.engine)
         if inspector:
             return inspector.has_table("events")
-
+        
     def dict(query):
     # Returns dict of query
         result = {}

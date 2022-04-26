@@ -5,6 +5,7 @@ from .models.models import frigate, cameras, events, User, apiAuth, config
 from . import api
 from .helpers.cookies import cookies
 from .logit import logit
+from . import db
 main = Blueprint('main',__name__)
 
 
@@ -17,8 +18,9 @@ def index():
     print(f"#################################################")
     page = '/'
     title = 'Latest Events'
-    events = api.apiShowLatest()
-    return render_template('events.html',Menu=menu,page=page,title=title,events=events,cameras=Cameras)
+    db.create_all()
+    Events = events.query.order_by(desc(events.time)).order_by(desc(events.time)).limit(12).all()
+    return render_template('events.html',Menu=menu,page=page,title=title,events=Events,cameras=Cameras,camera="all")
 
 @main.route('/latest')
 @login_required
@@ -32,8 +34,9 @@ def viewAll():
     menu = request.cookies.get('menu')
     page = '/all'
     title = 'All Events'
-    events = api.apiShowAllEvents()
-    return render_template('events.html',Menu=menu,page=page,title=title,events=events,cameras=Cameras)
+    db.create_all()
+    Events = events.query.order_by(desc(events.time)).order_by(desc(events.time)).all()
+    return render_template('events.html',Menu=menu,page=page,title=title,events=Events,cameras=Cameras,camera="all")
 
 @main.route('/events/camera/<Camera>')        
 @login_required
@@ -43,8 +46,8 @@ def viewEventsbyCamera(Camera):
     page = cookies.getCookie('page')
     cookiejar = {'page':page,'cameras':str(Cameras)}
     title=f"{Camera.title()} Events"
-    query = events.query.filter(events.camera==Camera)
-    resp = make_response(render_template('events.html',Menu=menu,page=cookiejar['page'],title=title,events=events.dict(query),cameras=Cameras))
+    Events = events.query.filter(events.camera==Camera).order_by(desc(events.time)).all()
+    resp = make_response(render_template('events.html',Menu=menu,page=cookiejar['page'],title=title,events=Events,cameras=Cameras,camera=Camera))
     for cookie in cookiejar:
             resp.set_cookie(cookie,cookiejar[cookie])
     return resp
@@ -52,7 +55,7 @@ def viewEventsbyCamera(Camera):
 @main.route('/events/camera/<Camera>/<filter>/<value>')
 @login_required
 def viewEventsbyCameraFiltered(Camera,filter,value):
-    Cameras = Cameras = cameras.lst(cameras.query.all())
+    Cameras = Cameras = cameras.lst(cameras.query   .all())
     validFilter = False
     validValue = False
     validFilters = {'object':
@@ -76,20 +79,28 @@ def viewEventsbyCameraFiltered(Camera,filter,value):
         menu = request.cookies.get('menu')
         page = cookies.getCookie('page')
         cookiejar={'page':page}
-        title=f"{Camera.title()} Events by {filter.title()}"
-        if filter == 'object':
-            query = events.query.filter(events.camera==Camera,events.object==value)
-        if filter == 'score':
-            query = events.query.filter(events.camera==Camera,events.score==int(value))
-        if filter == 'ack':
-            query = events.query.filter(events.camera==Camera,events.ack==value)
+        title=f"{Camera.title()} Events by {value.title()}"
+        if Camera == "all":
+            if filter == 'object':
+                Events = events.query.filter(events.object==value).order_by(desc(events.time)).all()
+            if filter == 'score':
+                Events = events.query.filter(events.score==int(value)).order_by(desc(events.time)).all()
+            if filter == 'ack':
+                Events = events.query.filter(events.ack==value).order_by(desc(events.time)).all()
+        else:
+            if filter == 'object':
+                Events = events.query.filter(events.camera==Camera,events.object==value).order_by(desc(events.time)).all()
+            if filter == 'score':
+                Events = events.query.filter(events.camera==Camera,events.score==int(value)).order_by(desc(events.time)).all()
+            if filter == 'ack':
+                Events = events.query.filter(events.camera==Camera,events.ack==value).order_by(desc(events.time)).all()
     else:
         flashMessage = f"Invalid filter selected. Valid filters are:"
         for fil in validFilters:
             flashMessage += f" {fil}"
         flashMessage+= "."
         flash(flashMessage)
-    resp = make_response(render_template('events.html',Menu=menu,page=cookiejar['page'],title=title,events=events.dict(query),cameras=Cameras))
+    resp = make_response(render_template('events.html',Menu=menu,page=cookiejar['page'],title=title,events=Events,cameras=Cameras,camera=Camera))
     return cookies.setCookies(cookiejar,resp)
 
 @main.route('/event/<eventid>/<view>')

@@ -5,16 +5,16 @@
     {% for event in events %}
         <div class='events'>
         <div class="eventThumb">
-        <a href='/event/{{ events[event]["eventid"] }}/snap'>
-        <img class='thumb' src='/static/events/{{ events[event]["eventid"]}}/thumb.jpg'>
+        <a href='/event/{{ event.eventid }}/snap'>
+        <img class='thumb' src='/static/events/{{ event.eventid}}/thumb.jpg'>
         </a>
         <div class='eventsDetails'>
-        <div class='subdetail'>{{ events[event]["time"] }}</div>
+        <div class='subdetail'>{{ event.time|timezone }}</div>
         
-        <div class='subdetail'>{{ events[event]["object"] }}</div>
-        <div class='subdetail'>{{ events[event]["score"] }}%</div>
+        <div class='subdetail'>{{ event.object }}</div>
+        <div class='subdetail'>{{ event.score }}%</div>
         </div>
-        <div class="{% if events[event]['ack'] == 'true' %}hidden{% else %}new{% endif %}">NEW</div>
+        <div class="{% if event.ack == 'true' %}hidden{% else %}new{% endif %}">NEW</div>
         </div>
         </div>
     {% endfor %}

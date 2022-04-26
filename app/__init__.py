@@ -4,7 +4,9 @@ from flask_sqlalchemy import SQLAlchemy
 import json
 from flask_login import LoginManager
 from datetime import timedelta
-
+from datetime import datetime
+from dateutil import tz
+import pytz
 
 # Flask app Setup
 app = Flask(__name__)
@@ -46,3 +48,14 @@ app.register_blueprint(auth_blueprint)
 from .setup import setup as setup_blueprint
 app.register_blueprint(setup_blueprint)
 
+@app.template_filter('timezone')
+def convertTZ(time,clockFmt=12,Timezone="America/Anchorage"):
+        dt_utc = time
+        dt_utc = dt_utc.replace(tzinfo=pytz.UTC)
+        dt = dt_utc.astimezone(pytz.timezone(Timezone))
+        if clockFmt == 12:
+            outformat = "%-m/%-d/%y %-I:%M:%S %p"
+        else:
+            outformat = "%-m/%-d/%y %H:%M:%S"
+        outTime = dt.strftime(outformat).lower()
+        return outTime

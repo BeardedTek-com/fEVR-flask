@@ -41,6 +41,7 @@ a:hover{
     display: flex;
     flex-flow:row wrap;
     justify-content: center;
+    align-content: flex-start;
     overflow:hidden;
     overflow-wrap: break-word;
     width: 100%;
@@ -440,4 +441,21 @@ select:hover{
     .danger a:hover{
         color: rgb(150, 75, 75);
     }
+}
+.filters {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-content: center;
+    justify-content: flex-start;
+    align-items: baseline;
+    padding-left: 2em;
+    padding-bottom: 1em;
+}
+.filter {
+    padding-right: 1em;
+    font-size: 1.5em;
+}
+.filter a {
+    font-size: 1em;
 }

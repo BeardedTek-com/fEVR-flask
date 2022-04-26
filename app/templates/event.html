@@ -24,10 +24,11 @@
         {% else %}
             {% if view == 'clip' %}
                 <button onclick="window.location.href='/event/{{event['eventid']}}/snap'" class="eventControl">Event Snapshot</button>
+                <button onclick="window.location.href='/event/{{event['eventid']}}/clip'" class="eventControl">Event Video Clip</button>
             {% else %}
                 <button onclick="window.location.href='/event/{{event['eventid']}}/clip'" class="eventControl">Event Video Clip</button>
+                <button onclick="window.location.href='/event/{{event['eventid']}}/snap'" class="eventControl">Event Snapshot</button>
             {% endif %}
-            <button onclick="window.location.href='/event/{{event['eventid']}}/live'" class="eventControl">Live Video</button>
             {% if event['ack'] == "true" %}
             <button onclick="window.location.href='/event/{{event['eventid']}}/unack'" class="eventControl">Mark Unseen</button>
             {% else %}

@@ -12,6 +12,7 @@
 
 {% macro cameras(cameras) -%}
         <div id="cameraMenu" class="cameraMenu noSelect">
+                <div class="cameraitem"><a>Cameras:</a></div>
         {% for camera in cameras %}
                 <div class="cameraitem" onclick="window.location.href='/events/camera/{{camera}}';"><a>{{camera}}</a></div>
         {% endfor %}
