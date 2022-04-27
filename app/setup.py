@@ -1,5 +1,5 @@
 from flask import Blueprint, render_template, redirect, url_for, request, flash, jsonify
-from flask_login import login_required
+from flask_login import login_required, current_user
 from werkzeug.security import generate_password_hash
 from .models.models import User,frigate,cameras,events,apiAuth,config
 import sqlalchemy
@@ -13,17 +13,19 @@ setup = Blueprint('setup', __name__)
 @setup.route('/setup')
 def setupFwd():
     return redirect("/setup/admin")
+
 @setup.route('/setup/<Item>')
 @login_required
 def setupfEVR(Item):
+    user = current_user
+    Cameras = cameras.lst(cameras.query.all())
     menu=cookies.getCookie('menu')
-    status = {'db':{'cameras':False,'frigate':False,'User':False,'apiAuth':False,'config':False}}
+    status = {'db':{'cameras':False,'frigate':False,'mqtt':False,'other':False}}
     tables = {
         'frigate':frigate,
         'cameras':cameras,
-        'User':User,
-        'apiAuth':apiAuth,
-        'config':config
+        'mqtt':apiAuth,
+        'other':config
     }
     for table in tables:
         try:
@@ -44,36 +46,40 @@ def setupfEVR(Item):
                 adname = admin.name
                 admail = admin.email
                 admin = [adname,admail]
-            return render_template('setupadmin.html',menu=menu,next=next,admin=admin,label=label,page=page,items=status,Item=Item)
+                resp = redirect('/setup/cameras')
+            else:
+                # First, let's create the database
+                db.create_all()
+                status = {'db':{'cameras':False,'frigate':False,'User':False,'apiAuth':False,'config':False}}
+                # Sanity checks...
+                admin = User.query.filter_by(group='admin').first()
+                resp = render_template('setupadmin.html',passwd = randpwd.generate(),items=status,next="cameras")
 
-        elif Item == 'frigate':
-            next="/setup/cameras"
         elif Item == 'cameras':
-            next="/setup/User"
-        elif Item == 'User':
-            next="/setup/apiAuth"
-        elif Item == 'apiAuth':
-            label = 'apiAuth Setup'
+            next="/setup/frigate"
+            template = "setupcameras.html"
+            resp = render_template(template,Cameras=cameras.query.all(),cameras=Cameras,menu=menu,next=next,label=label,page=page,items=status,Item=Item,user=user)
+        elif Item == 'frigate':
+            next="/setup/mqtt"
+            template = "setupfrigate.html"
+            resp = render_template(template,frigate=frigate.query.all(),cameras=Cameras,menu=menu,next=next,label=label,page=page,items=status,Item=Item,user=user)
+        elif Item == 'mqtt':
+            label = 'MQTT Client Setup'
             next = '/setup/config'
+            template = "setupapiauth.html"
+            resp = render_template(template,frigate=frigate.query.all(),cameras=Cameras,menu=menu,next=next,label=label,page=page,items=status,Item=Item,user=user)
         elif Item == 'config':
+            label = "Other"
             next = '/'
+            template = "setupconfig.html"
+            resp = render_template(template,frigate=frigate.query.all(),cameras=Cameras,menu=menu,next=next,label=label,page=page,items=status,Item=Item,user=user)
         else:
-            next = "/"
-        return render_template('setup.html',menu=menu,next=next,label=label,page=page,items=status,Item=Item)
-
-
-@setup.route('/setup/admin')
-def setupAdmin():
-    # First, let's create the database
-    db.create_all()
-    status = {'db':{'cameras':False,'frigate':False,'User':False,'apiAuth':False,'config':False}}
-    # Sanity checks...
-    admin = User.query.filter_by(group='admin').first()
-    if admin: # If an admin already exists, then go to signup page instead.
-        flash(f"An admin account already exists.<br/>Please sign up for a regular user account.")
-        return redirect(url_for('auth.signup'))
-    else:
-        return render_template('setupadmin.html',passwd = randpwd.generate(),items=status)
+            label = "Cameras"
+            next="/setup/frigate"
+            template = "setupcameras.html"
+            flash(f"{Item} not a valid setup paramater.  Back to the start you go.")
+            resp = render_template(template,Cameras=cameras.query.all(),cameras=Cameras,menu=menu,next=next,label=label,page=page,items=status,Item=Item,user=user)
+        return resp
 
 @setup.route('/setup/admin', methods=['POST'])
 def setupAdminProcessForm():

@@ -2,6 +2,16 @@
 
 {% block content %}
 <div class="setupContainer">
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            <div class="notification danger" style="font-size:1.5em;width:100%;">
+                {{ messages[0] }}
+            </div>
+        {% else %}
+            <div class="notification">
+            </div>
+        {% endif %}
+        {% endwith %}
     <div class="setupProgress noSelect">
         
         <div onclick="window.location.href='/setup'" class="setup-label div-link">Admin</div>
