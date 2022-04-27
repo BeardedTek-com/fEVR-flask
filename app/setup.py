@@ -14,6 +14,25 @@ setup = Blueprint('setup', __name__)
 def setupFwd():
     return redirect("/setup/admin")
 
+@setup.route('/setup/admin')
+def setupAdmin():
+    # First, let's create the database
+    db.create_all()
+    admin = User.query.filter_by(group='admin').first()
+    if admin:
+        adname = admin.name
+        admail = admin.email
+        admin = [adname,admail]
+        resp = redirect('/setup/cameras')
+    else:
+        # First, let's create the database
+        db.create_all()
+        status = {'db':{'cameras':False,'frigate':False,'User':False,'apiAuth':False,'config':False}}
+        # Sanity checks...
+        admin = User.query.filter_by(group='admin').first()
+        resp = render_template('setupadmin.html',passwd = randpwd.generate(),items=status,next="cameras")
+    return resp
+
 @setup.route('/setup/<Item>')
 @login_required
 def setupfEVR(Item):
@@ -41,19 +60,7 @@ def setupfEVR(Item):
         if Item == 'start' or Item == 'fevr' or Item == 'admin':
             next='frigate'
             label = 'fEVR Setup'
-            admin = User.query.filter_by(group='admin').first()
-            if admin:
-                adname = admin.name
-                admail = admin.email
-                admin = [adname,admail]
-                resp = redirect('/setup/cameras')
-            else:
-                # First, let's create the database
-                db.create_all()
-                status = {'db':{'cameras':False,'frigate':False,'User':False,'apiAuth':False,'config':False}}
-                # Sanity checks...
-                admin = User.query.filter_by(group='admin').first()
-                resp = render_template('setupadmin.html',passwd = randpwd.generate(),items=status,next="cameras")
+            
 
         elif Item == 'cameras':
             next="/setup/frigate"
@@ -66,7 +73,7 @@ def setupfEVR(Item):
         elif Item == 'mqtt':
             label = 'MQTT Client Setup'
             next = '/setup/config'
-            template = "setupapiauth.html"
+            template = "setupmqtt.html"
             resp = render_template(template,frigate=frigate.query.all(),cameras=Cameras,menu=menu,next=next,label=label,page=page,items=status,Item=Item,user=user)
         elif Item == 'config':
             label = "Other"
@@ -115,3 +122,42 @@ def setupAdminProcessForm():
         db.session.commit()
 
         return redirect(url_for('auth.login'))
+
+@setup.route('/setup/cameras/add',methods=['POST'])
+@login_required
+def apiAddCameraPost():
+    if current_user.group == "admin":
+        db.create_all()
+        camera = request.form.get('camera')
+        hls = request.form.get('hls')
+        rtsp = request.form.get('rtsp')
+        camera = cameras(camera=camera,hls=hls,rtsp=rtsp)
+        db.session.add(camera)
+        db.session.commit()
+        resp = redirect('/setup/cameras')
+    else:
+        resp = redirect('/')
+    return resp
+
+@setup.route('/setup/frigate/add',methods=['POST'])
+@login_required
+def setupAddFrigatePost():
+    if current_user.group == "admin":
+        db.create_all()
+        name = request.form.get('name')
+        url = request.form.get('url')
+        Frigate = frigate(name=name,url=url)
+        db.session.add(Frigate)
+        db.session.commit()
+        flash(f"{name} / {url} successfully added.")
+        resp = redirect('/setup/frigate')
+    else:
+        resp = redirect('/')
+    return resp
+
+@setup.route('/setup/mqtt/add',methods=['POST'])
+@login_required
+def setupAddMqttPost():
+    if current_user.group == "admin":
+        db.create_all()
+        name='mqtt_client'

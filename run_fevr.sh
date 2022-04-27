@@ -18,4 +18,10 @@ echo "Done Installing python requirements"
 
 echo "Starting fEVR"
 export FLASK_ENV='development'
-flask run -h "0.0.0.0" -p 5090
+
+/fevr/venv/bin/flask run -h "0.0.0.0" -p 5090
+
+TS=0
+while [ $TS == 0 ]; do
+    sleep 10000
+done
