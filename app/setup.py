@@ -1,8 +1,8 @@
 from flask import Blueprint, render_template, redirect, url_for, request, flash, jsonify
 from flask_login import login_required, current_user
 from werkzeug.security import generate_password_hash
-from .models.models import User,frigate,cameras,events,apiAuth,config
-import sqlalchemy
+from .models.models import User,frigate,cameras,events,apiAuth,config,mqtt
+from sqlalchemy import desc, exc
 from .helpers.drawSVG import drawSVG
 from . import db
 from .rndpwd import randpwd
@@ -50,7 +50,7 @@ def setupfEVR(Item):
         try:
             tables[table].query.first()
             status['db'][table] = True
-        except sqlalchemy.exc.OperationalError:
+        except exc.OperationalError:
             status['db'][table] = False
     if Item == status:
         return status
@@ -74,8 +74,8 @@ def setupfEVR(Item):
             label = 'MQTT Client Setup'
             next = '/setup/config'
             template = "setupmqtt.html"
-            resp = render_template(template,frigate=frigate.query.all(),cameras=Cameras,menu=menu,next=next,label=label,page=page,items=status,Item=Item,user=user)
-        elif Item == 'config':
+            resp = render_template(template,mqtt=mqtt.query.order_by(desc(mqtt.id)).first(),cameras=Cameras,menu=menu,next=next,label=label,page=page,items=status,Item=Item,user=user)
+        elif Item == 'config' or Item == 'other':
             label = "Other"
             next = '/'
             template = "setupconfig.html"
@@ -146,6 +146,7 @@ def setupAddFrigatePost():
         db.create_all()
         name = request.form.get('name')
         url = request.form.get('url')
+        
         Frigate = frigate(name=name,url=url)
         db.session.add(Frigate)
         db.session.commit()
@@ -160,4 +161,54 @@ def setupAddFrigatePost():
 def setupAddMqttPost():
     if current_user.group == "admin":
         db.create_all()
-        name='mqtt_client'
+        broker = request.form.get('broker')
+        port = request.form.get('port')
+        brokerU = request.form.get('brokerU')
+        if not brokerU:
+            brokerU == "\"\""
+        brokerP = request.form.get('brokerP')
+        if not brokerP:
+            brokerP == "\"\""
+        topics = request.form.get('topics')
+        https = request.form.get('https')
+        fevr = request.form.get('fevr')
+        key = request.form.get('key')
+        fields = {"broker":broker,"port":port,"user":brokerU,"password":brokerP,"topics":topics,"https":https,"fevr":fevr,"key":key}
+        Valid = True
+        for field in fields:
+            if not fields[field]:
+                flash(f"{field.title()} is a required field.")
+            else:
+                if field == "https":
+                    if fields[field] != "http" and fields[field] != "https":
+                        flash(f"https field must be either http or https")
+                        Valid = False
+                elif field == "key":
+                    if 128 > len(fields[field]) > 128:
+                        flash(f"key must be exactly 128 characters long.")
+                        Valid = False
+                elif field == "port":
+                    try:
+                        port = int(port)
+                    except:
+                        flash("Port must be an integer.  If unsure, just enter 1883.")
+                        Valid = False
+                elif field == "user":
+                    if "none" in fields[field]:
+                        user=""
+                elif field == "password":
+                    if "none" in fields[field]:
+                        password=""
+        if Valid:
+            MQTT = mqtt(port=port,topics=topics,user=user,password=password,https=https,fevr=fevr,broker=broker,key=key)
+            db.session.add(MQTT)
+            db.session.commit()
+            command = f"/fevr/app/mqtt_client -p {port} -t {topics} -u \"{user}\" -P \"{password}\" -f {fevr} "
+            if https == "https":
+                command += "-s "
+            command += f"\"{broker}\" {key}"
+            # Write new run_mqtt_client.sh:
+            with open('run_mqtt_client.sh', "w") as myfile:
+                myfile.write(f"#!/bin/sh\n{command}")
+        resp = redirect('/setup/mqtt')
+        return resp

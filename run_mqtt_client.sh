@@ -1,0 +1,2 @@
+#!/bin/sh
+/fevr/app/mqtt_client -p 1883 -t frigate/+ -u "" -P "" -f fevr.jeandr.net -s "192.168.2.87" 4zI2dcHr7QFP7sT1GK1Lw2J4miOOrFPo4qe7T7rF4dhixUUDzvusNDq85UQgh1q9M6pzFpgYPQ26L0tmVJs8L7XyP52AWpFkbTLgAqx3vD6ek75lPB9JaV4zQzfu5ozf

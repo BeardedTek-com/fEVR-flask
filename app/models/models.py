@@ -126,3 +126,14 @@ class config(db.Model):
     param = db.Column(db.String(50),unique=True)
     description = db.Column(db.String(500))
     value = db.Column(db.String(100))
+
+class mqtt(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    port = db.Column(db.Integer)
+    topics = db.Column(db.String(200))
+    user = db.Column(db.String(50))
+    password = db.Column(db.String(200))
+    https = db.Column(db.String(10))
+    fevr = db.Column(db.String(200))
+    broker = db.Column(db.String(200))
+    key = db.Column(db.String(150))

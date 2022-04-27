@@ -669,3 +669,10 @@ a:hover{
     padding-bottom: 1em;
     font-size: 0.75em;
 }
+.mqtt_client{
+    max-width:100%;
+    font-family:monospace;
+    font-size:0.75em;
+    padding: 1em;
+    background-color: var(--codeBackground);
+}
