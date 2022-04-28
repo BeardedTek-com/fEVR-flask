@@ -14,7 +14,7 @@ services:
       - sys_module
     environment:
       AUTH_KEY: ${AUTH_KEY}
-      BRIDGE_SUBNET: $(BRIDGE_SUBNET:-192.168.101.0/24)
+      BRIDGE_SUBNET: ${BRIDGE_SUBNET:-192.168.101.0/24}
     command: /run.sh
     networks:
       fevrnet:
