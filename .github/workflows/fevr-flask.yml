@@ -7,7 +7,7 @@ name: Create and publish beardedtek/fevr-flask Docker image
 
 on:
   push:
-    branches: ['final']
+    branches: ['main']
 
 env:
   REGISTRY: ghcr.io

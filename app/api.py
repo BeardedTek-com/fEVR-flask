@@ -48,10 +48,19 @@ def apiAddFrigate(name,http,ip,port):
 
 @api.route('/api/frigate')
 def apiFrigate():
-    if not frigate.exists():
+    if frigate.exists():
         db.create_all()
-    frigate = frigate.query.filter_by(name="frigate").all()
-    external = internal = frigate.url
+    query = frigate.query.all()
+    frigates = frigate.dict(query)
+
+    if frigates['frigate']:
+        internal = frigates['frigate']
+    else:
+        internal = "http://192.168.2.240:5000"
+    if frigates['external']:
+        external = frigates['external']
+    else:
+        external = internal
     return {'frigate':internal,'external':external}
 
 @api.route('/api/events/add/<eventid>/<camera>/<object>/<score>')
