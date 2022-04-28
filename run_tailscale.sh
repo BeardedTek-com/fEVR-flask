@@ -17,7 +17,7 @@ while [ $OK != 0 ]; do
 done
 
 
-tailscale up --authkey="$AUTH_KEY" --accept-routes --advertise-routes="192.168.101.0/24" --accept-dns --hostname fevrflask
+tailscale up --authkey="$AUTH_KEY" --accept-routes --advertise-routes="$BRIDGE_SUBNET" --accept-dns --hostname fevrflask
 TS=0
 while [ $TS == 0 ]; do
     sleep 10000
