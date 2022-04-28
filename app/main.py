@@ -140,7 +140,7 @@ def viewSingle(eventid,view):
     page = f"/event/{eventid}/{view}"
     cookiejar['page'] = page
     Frigate = api.apiFrigate()
-    frigateURL = Frigate['frigate']
+    frigateURL = Frigate['external']
     if view == 'ack':
         api.apiAckEvent(eventid)
     elif view == 'unack':
