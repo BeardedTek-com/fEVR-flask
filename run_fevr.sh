@@ -17,7 +17,8 @@ pip install -r /fevr/app/requirements.txt && \
 echo "Done Installing python requirements"
 
 echo "Starting fEVR"
-export FLASK_ENV='development'
+# Uncomment to put fEVR into development Mode
+#export FLASK_ENV='development'
 
 /fevr/venv/bin/flask run -h "0.0.0.0" -p 5090
 
