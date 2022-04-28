@@ -51,17 +51,18 @@ def apiFrigate():
     if frigate.exists():
         db.create_all()
     query = frigate.query.all()
-    frigates = frigate.dict(query)
-
-    if frigates['frigate']:
-        internal = frigates['frigate']
-    else:
-        internal = "http://192.168.2.240:5000"
-    if frigates['external']:
-        external = frigates['external']
-    else:
+    internal = ""
+    external = ""
+    for Frigate in query:
+        if Frigate.name == "frigate":
+            internal = Frigate.url
+        if Frigate.name == "external":
+            external = Frigate.url
+    if not internal:
+        internal = "http://frigate.local:5000/"
+    if not external:
         external = internal
-    return {'frigate':internal,'external':external}
+    return {'frigate':f"{internal}/",'external':f"{external}/"}
 
 @api.route('/api/events/add/<eventid>/<camera>/<object>/<score>')
 @login_required
